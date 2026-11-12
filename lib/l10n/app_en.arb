@@ -1,0 +1,150 @@
+{
+  "@@locale": "en",
+  "appName": "Xiaoyu",
+  "home": "Home",
+  "me": "Me",
+  "headline": "A little company, a real conversation",
+  "tagline": "Choose a familiar voice. Share your day.",
+  "myCharacters": "My companions",
+  "createCharacter": "Create companion",
+  "noCharacters": "Start with a portrait and a personality.",
+  "account": "Account settings",
+  "settings": "Settings",
+  "history": "History",
+  "localProfile": "Local profile",
+  "profileHint": "Your profile and companions stay on this device. Calls use your Vidu account.",
+  "nickname": "Your name",
+  "key": "Vidu API Key",
+  "keyHint": "Paste your own API Key",
+  "keyConfigured": "API Key configured",
+  "keyMissing": "Set up your API Key",
+  "rememberKey": "Save in secure system storage",
+  "sameAccount": "This is the original Vidu account; keep resource links",
+  "sameAccountHint": "Turn this off for a new account. Existing companions keep their original account scope.",
+  "checkKey": "Check connection",
+  "keyChecked": "Authentication passed. This does not verify credits or RTC channel access.",
+  "clearKey": "Clear API Key",
+  "clearKeyHint": "Only the API Key is cleared. Companions, history and cloud resources remain. Pending calls still need the original account key.",
+  "save": "Save",
+  "saved": "Saved",
+  "cancel": "Cancel",
+  "close": "Close",
+  "edit": "Edit",
+  "delete": "Delete",
+  "characterName": "Name",
+  "summary": "Introduction",
+  "persona": "Prompt / personality",
+  "personaHint": "Describe identity, personality, speaking style and your relationship.",
+  "portrait": "Portrait",
+  "choosePhoto": "Choose photo",
+  "photoHint": "One person, PNG, JPG or WebP, under 20 MB. The original stays on this device.",
+  "uploadAvatar": "Create cloud avatar",
+  "refresh": "Refresh",
+  "existingAvatars": "Choose an account avatar",
+  "noAvatars": "No avatar assets in this account",
+  "voice": "Voice",
+  "greeting": "Greeting instructions",
+  "memory": "Remember our conversations",
+  "memoryHint": "When enabled, Vidu stores extracted memories in the cloud, scoped to this companion.",
+  "saveDraft": "Save draft",
+  "saveCharacter": "Save companion",
+  "callCostTitle": "Start a live conversation",
+  "callCostBody": "This uses your Vidu credits. Billing starts when the control connection is ready. The default limit is 10 minutes. Muting may still incur charges. The call ends when the app goes into the background or the screen locks. Microphone access is required; your camera stays off.",
+  "endCall": "End call",
+  "returnToCall": "Return to call",
+  "connectingHint": "Waiting for live audio and video. You can end at any time.",
+  "mute": "Mute",
+  "unmute": "Unmute",
+  "audioRoute": "Audio output",
+  "speaker": "Speaker",
+  "earpiece": "Earpiece",
+  "systemRoute": "System default / connected headset",
+  "interrupt": "Interrupt",
+  "chat": "Chat",
+  "actions": "Actions",
+  "chatHint": "Say something…",
+  "actionHint": "Describe an action…",
+  "send": "Send",
+  "sent": "Command sent",
+  "voiceAccepted": "Voice update accepted. It takes effect after the current reply.",
+  "emptyTranscript": "Live transcriptions will appear here",
+  "noHistory": "No calls yet",
+  "usagePending": "Usage pending",
+  "checkStatus": "Check platform status",
+  "endPending": "Local connections released. Platform ending is unconfirmed; billing may continue.",
+  "unknownCreation": "Creation outcome unknown; no live ID received. Verify in the Vidu console before continuing.",
+  "localDeleteHint": "Delete this local companion. History and cloud avatars, knowledge and memories remain.",
+  "privacy": "About your data",
+  "privacyBody": "Your API Key is only used to authenticate with Vidu. It is excluded from the chat database. Companions and chat text stay on this device. Live audio, persona and enabled knowledge and memory are sent to Vidu. Xiaoyu does not record entire calls.",
+  "showKey": "Show or hide API Key",
+  "about": "Xiaoyu · Integration preview",
+  "actionsHint": "Describe an action. Results depend on the avatar; precise poses are not guaranteed.",
+  "status": "{phase, select, idle{Ready} creating{Connecting} initializing{Preparing} joining{Connecting media} connected{In call} ending{Ending} ended{Ended} pending{Ending unconfirmed} failed{Failed} draft{Draft} created{Created} processing{Processing avatar} success{Avatar ready} other{Pending}}",
+  "@status": {
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "usage": "Billed {seconds} seconds · {credits} credits",
+  "@usage": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "String"
+      }
+    }
+  },
+  "error": "{code, select, missingKey{Set up your API Key first.} unauthorized{Invalid API Key. Please check it.} forbidden{This account cannot access the resource.} channelUnavailable{Agora is unavailable. Confirm channel access with Vidu.} insufficientCredit{Insufficient Vidu credits.} characterIncomplete{Complete the name, persona, ready avatar and compatible voice.} wrongCredential{This companion belongs to another credential profile. Restore its original profile.} microphoneDenied{Microphone permission is required. Allow it in system settings.} pendingCall{An earlier call has not been confirmed ended. Check History first.} prepareTimeout{Preparation timed out. Ending and checking status.} connectionLost{Connection lost. Ending and checking status.} notConnected{Connect a live call first.} actionCooldown{Wait two seconds before sending another action.} imageInvalid{Choose a supported image smaller than 20 MB.} inputInvalid{Check the input and its length.} voicePending{A voice update is awaiting confirmation.} voiceUnknown{Voice update outcome unknown. Change it in the next call.} voiceChangeFailed{Voice update failed. The accepted voice is unchanged.} commandRejected{The platform rejected the command.} notFound{Resource missing or temporarily unavailable.} protocol{The platform response is incompatible. Keep the pending record.} other{The operation did not complete. Check the network or try later.}}",
+  "@error": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "confirm": "Confirm",
+  "unsavedDraft": "Save your changes as a draft before leaving.",
+  "knowledgeUnavailable": "Knowledge · Not available yet",
+  "voicePreviewUnavailable": "Voice preview is not available yet. Select a voice for calls.",
+  "brandLine": "Every moment deserves to be heard",
+  "bannerBadge": "Warmth · Just for you",
+  "bannerTitle": "Companionship that responds",
+  "bannerBody": "Create a companion for real-time conversation and connection",
+  "viewAll": "View all",
+  "comingSoon": "Not available yet",
+  "recommended": "Discover companions",
+  "advancedSettings": "Advanced settings",
+  "knowledge": "Knowledge",
+  "chooseDocument": "Choose document",
+  "voiceAll": "All",
+  "voiceMine": "Mine",
+  "voiceMale": "Male",
+  "voiceFemale": "Female",
+  "choose": "Choose",
+  "chosen": "Selected",
+  "createTitle": "Create character",
+  "uploadPhoto": "Upload photo",
+  "connectPreparing": "Preparing your conversation…",
+  "connectLoading": "Connecting your companion and voice",
+  "cancelConnection": "Cancel connection",
+  "callOngoing": "In call",
+  "profileSubtitle": "Share your day with someone who listens",
+  "characterCount": "{count} companions",
+  "submit": "Submit",
+  "more": "More",
+  "voiceStyle": "Voice preset",
+  "transcript": "Transcript",
+  "@characterCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "showPassword": "Show password",
+  "hidePassword": "Hide password"
+}

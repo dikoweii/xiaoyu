@@ -1,0 +1,6 @@
+interface:
+  display_name: "小遇工程 Harness"
+  short_description: "运行小遇代码、架构、布局、构建和设备证据门禁，真实报告缺失验证"
+  default_prompt: "Use $xiaoyu-harness to implement and verify this Xiaoyu change."
+policy:
+  allow_implicit_invocation: true

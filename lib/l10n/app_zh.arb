@@ -1,0 +1,150 @@
+{
+  "@@locale": "zh",
+  "appName": "小遇",
+  "home": "首页",
+  "me": "我的",
+  "headline": "遇见一份，随时可说的陪伴",
+  "tagline": "选一个熟悉的声音，聊聊今天。",
+  "myCharacters": "我的数字人",
+  "createCharacter": "新增数字人",
+  "noCharacters": "从一张照片、一段性格开始。",
+  "account": "账号设置",
+  "settings": "设置",
+  "history": "历史记录",
+  "localProfile": "本地个人资料",
+  "profileHint": "资料与角色保存在本机，通话由你的 Vidu 账号提供。",
+  "nickname": "你的称呼",
+  "key": "Vidu API Key",
+  "keyHint": "粘贴自己的 API Key",
+  "keyConfigured": "已配置接入凭证",
+  "keyMissing": "尚未配置 API Key",
+  "rememberKey": "保存到系统安全存储",
+  "sameAccount": "这是原来的 Vidu 账号，保留资源关联",
+  "sameAccountHint": "新账号请关闭此项，旧角色不会自动关联到新账号。",
+  "checkKey": "检查连接",
+  "keyChecked": "鉴权通过。此检查不代表余额充足或声网通道已开通。",
+  "clearKey": "清除凭证",
+  "clearKeyHint": "仅清除接入凭证，保留本地角色、历史及云端资源。待核对通话仍需原账号凭证。",
+  "save": "保存",
+  "saved": "已保存",
+  "cancel": "取消",
+  "close": "关闭",
+  "edit": "编辑",
+  "delete": "删除",
+  "characterName": "名称",
+  "summary": "简介",
+  "persona": "提示词 / 角色设定",
+  "personaHint": "描述她的身份、性格、说话方式，以及你们的关系。",
+  "portrait": "形象原图",
+  "choosePhoto": "从相册选择",
+  "photoHint": "单人 PNG、JPG 或 WebP 图片，小于 20 MB。原图保存在本机。",
+  "uploadAvatar": "创建云端形象",
+  "refresh": "刷新状态",
+  "existingAvatars": "选择账号已有形象",
+  "noAvatars": "当前账号没有可用的形象资产",
+  "voice": "声音",
+  "greeting": "开场提示",
+  "memory": "记住我们的对话",
+  "memoryHint": "开启后，对话提炼的记忆保存在 Vidu 云端，并按当前角色隔离。",
+  "saveDraft": "保存草稿",
+  "saveCharacter": "保存数字人",
+  "callCostTitle": "开始一场实时陪伴",
+  "callCostBody": "本次使用你的 Vidu 账号，控制链路准备就绪后开始计费。默认最多 10 分钟，静音仍可能计费；进入后台或锁屏会结束通话。首次通话需要麦克风权限，不开启摄像头。",
+  "endCall": "结束通话",
+  "returnToCall": "返回当前通话",
+  "connectingHint": "正在等待真实数字人音视频。你可以随时结束。",
+  "mute": "静音",
+  "unmute": "取消静音",
+  "audioRoute": "音频输出",
+  "speaker": "扬声器",
+  "earpiece": "听筒",
+  "systemRoute": "系统默认 / 已连接耳机",
+  "interrupt": "打断回复",
+  "chat": "聊天",
+  "actions": "动作",
+  "chatHint": "输入你想说的话…",
+  "actionHint": "描述希望她做的动作…",
+  "send": "发送",
+  "sent": "指令已发送",
+  "voiceAccepted": "声音设置已接受，当前回复结束后生效。",
+  "emptyTranscript": "真实转写将在这里显示",
+  "noHistory": "还没有通话记录",
+  "usagePending": "用量待更新",
+  "checkStatus": "核对平台状态",
+  "endPending": "本地已退出，平台结束状态待核对；不能确认已停止计费。",
+  "unknownCreation": "创建结果未知，未取得会话 ID。请在 Vidu 控制台核实后再继续。",
+  "localDeleteHint": "删除本地角色，保留历史与云端形象、知识库和记忆。",
+  "privacy": "关于数据",
+  "privacyBody": "API Key 仅用于 Vidu 鉴权，不写入聊天数据库。角色与聊天原文保存在本机；实时音频、角色设定及启用的知识与记忆会发送到 Vidu。小遇不录制整场音视频。",
+  "showKey": "显示或隐藏 API Key",
+  "about": "小遇 · 接入验证版",
+  "actionsHint": "输入动作描述。效果取决于当前形象，不保证精确姿态。",
+  "status": "{phase, select, idle{待开始} creating{正在连接} initializing{正在准备} joining{正在接入音视频} connected{通话中} ending{正在结束} ended{已结束} pending{结束待核对} failed{连接失败} draft{草稿} created{已创建} processing{形象处理中} success{形象已就绪} other{待处理}}",
+  "@status": {
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "usage": "计费 {seconds} 秒 · {credits} 积分",
+  "@usage": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "credits": {
+        "type": "String"
+      }
+    }
+  },
+  "error": "{code, select, missingKey{请先配置 API Key。} unauthorized{API Key 无效，请检查。} forbidden{当前账号无权访问该资源。} channelUnavailable{声网通道不可用，请向 Vidu 确认开通状态。} insufficientCredit{Vidu 账号额度不足。} characterIncomplete{请补全名称、人设、就绪形象与兼容声音。} wrongCredential{此角色属于另一套凭证配置，请恢复原配置。} microphoneDenied{需要麦克风权限才能通话，请在系统设置中允许。} pendingCall{有尚未确认结束的通话，请先在历史中核对。} prepareTimeout{连接准备超时，正在结束并核对。} connectionLost{连接已中断，正在结束并核对。} notConnected{请先接通实时通话。} actionCooldown{请稍等两秒再发送动作。} imageInvalid{请选择支持的图片格式，且大小小于 20 MB。} inputInvalid{请检查输入内容及长度。} voicePending{有声音更新正在等待确认，请稍候。} voiceUnknown{声音更新结果未知，请在下次通话再调整。} voiceChangeFailed{声音更新失败，当前声音保持原设置。} commandRejected{平台未接受该指令。} notFound{资源不存在或暂不可查询。} protocol{平台响应格式暂不兼容，请保留待核对状态。} other{操作未完成，请检查网络或稍后重试。}}",
+  "@error": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "confirm": "确认",
+  "unsavedDraft": "保存当前修改为草稿后返回。",
+  "knowledgeUnavailable": "知识库 · 暂未接入",
+  "voicePreviewUnavailable": "音色试听暂未接入，可选择通话音色",
+  "brandLine": "有你在的每一刻，都值得被倾听",
+  "bannerBadge": "温暖·专属陪伴",
+  "bannerTitle": "让陪伴，有回应",
+  "bannerBody": "创建属于你的数字人，开启实时语音与情绪共鸣",
+  "viewAll": "查看全部",
+  "comingSoon": "暂未开放",
+  "recommended": "推荐数字人",
+  "advancedSettings": "高级设置",
+  "knowledge": "知识库",
+  "chooseDocument": "选择文档",
+  "voiceAll": "全部",
+  "voiceMine": "我的",
+  "voiceMale": "男声",
+  "voiceFemale": "女声",
+  "choose": "选择",
+  "chosen": "已选择",
+  "createTitle": "创建新角色",
+  "uploadPhoto": "上传照片",
+  "connectPreparing": "正在准备通话…",
+  "connectLoading": "正在连接数字人与音色",
+  "cancelConnection": "取消连接",
+  "callOngoing": "通话中",
+  "profileSubtitle": "把日常，说给懂你的人听",
+  "characterCount": "共 {count} 位",
+  "submit": "提交",
+  "more": "更多",
+  "voiceStyle": "官方音色",
+  "transcript": "对话记录",
+  "@characterCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "showPassword": "显示密码",
+  "hidePassword": "隐藏密码"
+}

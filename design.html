@@ -1,0 +1,762 @@
+<!DOCTYPE html><html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>小遇 · AI 数字人陪伴 App (iOS 五屏完整高保真总览)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+    :root {
+      --bg-dark: #08090D;
+      --surface-card: #17191F;
+      --surface-elevated: #20222A;
+      --text-main: #F5F5F7;
+      --text-muted: #A2A5AF;
+      --accent-lavender: #C2B7FF;
+      --accent-warm-pink: #E4C5D4;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "SF Pro Display", "SF Pro Text", "Plus Jakarta Sans", "Inter", sans-serif;
+      background-color: #050608;
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      margin: 0;
+      padding: 0;
+    }
+    /* iOS Liquid Glass Tokens */
+    .liquid-glass {
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36), inset 0 1px 1px 0 rgba(255, 255, 255, 0.16);
+    }
+    .liquid-glass-modal {
+      background: rgba(23, 25, 31, 0.94);
+      backdrop-filter: blur(36px) saturate(190%);
+      -webkit-backdrop-filter: blur(36px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.75), inset 0 1px 1.5px rgba(255, 255, 255, 0.2);
+    }
+    .liquid-glass-subtle {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25);
+    }
+    .liquid-glass-accent {
+      background: rgba(194, 183, 255, 0.16);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(194, 183, 255, 0.28);
+      box-shadow: 0 6px 24px rgba(194, 183, 255, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    }
+    .liquid-glass-red {
+      background: rgba(255, 69, 58, 0.25);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 69, 58, 0.45);
+      box-shadow: 0 8px 24px rgba(255, 69, 58, 0.25);
+    }
+    .card-solid {
+      background-color: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    /* Hide scrollbar for clean previews */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    * {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="p-6 md:p-8 lg:p-10 flex flex-col items-center min-h-screen bg-[#06070a]">
+<!-- Header Info -->
+<div class="w-full max-w-[2140px] mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/10 pb-5"><div>
+<div class="flex items-center gap-3 mb-2 flex-wrap">
+<span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#C2B7FF]/15 border border-[#C2B7FF]/30 text-[#C2B7FF] text-sm font-semibold">遇</span>
+<h1 class="text-2xl md:text-3xl font-bold tracking-tight text-white">小遇 · AI 数字人陪伴 App</h1>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-white/80 border border-white/10">iOS Liquid Glass</span>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#C2B7FF]/15 text-[#C2B7FF] border border-[#C2B7FF]/30">六屏全流程总览 (含进入通话Loading)</span>
+</div>
+<p class="text-sm text-[#A2A5AF]">面向中国大陆的高保真设计规范与核心六屏 UI 方案总览（iPhone 402 × 874 pt 标准平视渲染 · 无外壳遮挡）</p>
+</div>
+<div class="flex items-center gap-3 text-xs text-[#A2A5AF]">
+<div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#08090D] border border-white/20"></span>背景 #08090D</div>
+<div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#17191F] border border-white/10"></span>表层 #17191F</div>
+<div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#C2B7FF]"></span>点缀 #C2B7FF</div>
+<div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#E4C5D4]"></span>暖粉 #E4C5D4</div>
+</div></div>
+<!-- Five Screen Gallery Container (Horizontal Row, No Shells, Equal 402x874) -->
+<div class="w-full max-w-[2140px] overflow-x-auto pb-8">
+<div class="flex gap-5 xl:gap-6 justify-start xl:justify-center min-w-max px-2">
+<!-- ========================================== -->
+<!-- SCREEN 1: 首页 (Home) -->
+<!-- ========================================== -->
+<div class="w-[402px] h-[874px] rounded-[44px] overflow-hidden bg-[#08090D] border border-white/15 shadow-2xl relative flex flex-col shrink-0 select-none">
+<!-- Screen Tag -->
+<div class="absolute top-2 left-6 z-40 text-[10px] font-mono tracking-wider text-white/30 uppercase pointer-events-none">01 · 首页</div>
+<!-- Status Bar -->
+<div class="w-full h-12 pt-3 px-8 flex justify-between items-center text-xs font-semibold text-white/90 z-30 select-none">
+<span class="">9:41</span>
+<div class="flex items-center gap-1.5 text-sm">
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" opacity="0.3"></path><path d="M12 6c-3.31 0-6 2.69-6 6 0 1.48.54 2.83 1.43 3.89L12 19l4.57-3.11c.89-1.06 1.43-2.41 1.43-3.89 0-3.31-2.69-6-6-6z"></path></svg>
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"></path></svg>
+<div class="w-5 h-2.5 border border-white/80 rounded-sm p-0.5 flex items-center">
+<div class="h-full w-3/4 bg-white rounded-2xs"></div>
+</div>
+</div>
+</div>
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto px-5 pt-1 pb-28">
+<!-- Brand & Banner Section -->
+<div class="mt-2 mb-5">
+<div class="flex items-center justify-between mb-3">
+<div>
+<h2 class="text-[28px] font-bold tracking-tight text-[#F5F5F7]">小遇</h2>
+<p class="text-xs text-[#A2A5AF] mt-0.5">有你在的每一刻，都值得被倾听</p>
+</div>
+<button class="w-10 h-10 rounded-full liquid-glass flex items-center justify-center text-white/90">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+<!-- Intro Banner -->
+<div class="relative w-full h-[118px] rounded-[24px] overflow-hidden p-4 flex items-center justify-between border border-white/10 bg-gradient-to-r from-[#17191F] via-[#1A1C24] to-[#252030]">
+<div class="absolute -left-6 -top-6 w-32 h-32 bg-[#C2B7FF]/15 rounded-full blur-2xl pointer-events-none"></div>
+<div class="absolute right-12 bottom-0 w-28 h-28 bg-[#E4C5D4]/10 rounded-full blur-xl pointer-events-none"></div>
+<div class="relative z-10 max-w-[210px]">
+<span class="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#C2B7FF]/20 text-[#C2B7FF] border border-[#C2B7FF]/30 mb-1.5">温暖·专属陪伴</span>
+<h3 class="text-base font-semibold text-[#F5F5F7] tracking-tight">让陪伴，有回应</h3>
+<p class="text-[12px] text-[#A2A5AF] mt-0.5 leading-snug">创建属于你的数字人，开启实时语音与情绪共鸣</p>
+</div>
+<div class="relative z-10 w-20 h-20 rounded-2xl overflow-hidden border border-white/20 shadow-md shrink-0">
+<img alt="小雅" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIKYNduBoc9pN1Zz731E6iMnLaFaDapODidcxOkb3kinKSK4KgfHU2c8LN72ECW47x9V1DVXg0KHahw7UDW3vKkBHzBdKhXEhFJ__F88zeRlznQD1EGN85aDsKlfhc7_M2K_S0lTyWU8j0aus1Z9-rSo8_8U7DWVCWZ_r0xYPrXAk_BC6wj-FJP_7bsmgxoMfKO8E2isT6fvFlilFeEvWbR7pl8Z6Y4Z3Hf4B0X78">
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+</div>
+</div>
+</div>
+<!-- Section: 我的数字人 -->
+<div class="mb-6">
+<div class="flex items-center justify-between mb-3 px-1">
+<h4 class="text-[20px] font-bold text-[#F5F5F7] tracking-tight">我的数字人</h4>
+<span class="text-xs text-[#A2A5AF]">共 1 位</span>
+</div>
+<div class="grid grid-cols-2 gap-3.5">
+<!-- Card 1: 新增数字人 -->
+<div class="h-[238px] rounded-[26px] p-4 card-solid flex flex-col items-center justify-center text-center relative group cursor-pointer hover:border-[#C2B7FF]/40 transition-all border border-dashed border-white/20">
+<div class="w-14 h-14 rounded-full liquid-glass flex items-center justify-center mb-3 shadow-lg group-hover:scale-105 transition-transform">
+<svg class="w-7 h-7 text-[#C2B7FF]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.5v15m7.5-7.5h-15" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div class="text-[16px] font-semibold text-[#F5F5F7]">新增数字人</div>
+<p class="text-[12px] text-[#A2A5AF] mt-1 max-w-[120px] leading-relaxed">定制专属设定、形象与知识库</p>
+</div>
+<!-- Card 2: 小雅 -->
+<div class="h-[238px] rounded-[26px] overflow-hidden relative border border-white/15 shadow-lg group">
+<img alt="小雅" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIKYNduBoc9pN1Zz731E6iMnLaFaDapODidcxOkb3kinKSK4KgfHU2c8LN72ECW47x9V1DVXg0KHahw7UDW3vKkBHzBdKhXEhFJ__F88zeRlznQD1EGN85aDsKlfhc7_M2K_S0lTyWU8j0aus1Z9-rSo8_8U7DWVCWZ_r0xYPrXAk_BC6wj-FJP_7bsmgxoMfKO8E2isT6fvFlilFeEvWbR7pl8Z6Y4Z3Hf4B0X78">
+<div class="absolute inset-0 bg-gradient-to-t from-[#08090D] via-[#08090D]/50 to-transparent"></div>
+<button class="absolute top-3 right-3 w-8 h-8 rounded-full liquid-glass flex items-center justify-center text-white/90">
+<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.75"></circle><circle cx="12" cy="12" r="1.75"></circle><circle cx="12" cy="19" r="1.75"></circle></svg>
+</button>
+<div class="absolute bottom-3 left-3 right-3 flex flex-col">
+<div class="flex items-center gap-1.5 mb-1">
+<span class="text-[17px] font-bold text-[#F5F5F7]">小雅</span>
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+</div>
+<p class="text-[12px] text-[#A2A5AF] line-clamp-1 mb-2.5">温柔倾听，记得你的日常</p>
+<button class="w-full h-10 rounded-full liquid-glass-accent flex items-center justify-center gap-1.5 text-xs font-semibold text-[#F5F5F7] hover:brightness-110 active:scale-95 transition-all">
+<svg class="w-4 h-4 text-[#C2B7FF]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span class="">聊天</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: 推荐数字人 -->
+<div>
+<div class="flex items-center justify-between mb-3 px-1">
+<h4 class="text-[20px] font-bold text-[#F5F5F7] tracking-tight">推荐数字人</h4>
+<span class="text-xs text-[#C2B7FF] flex items-center gap-0.5">查看更多 <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</div>
+<div class="grid grid-cols-2 gap-3.5">
+<!-- Rec 1: 晚晴 -->
+<div class="h-[180px] rounded-[24px] overflow-hidden relative border border-white/10 card-solid">
+<div class="absolute inset-0 bg-gradient-to-br from-[#2D2A3E] via-[#1E202B] to-[#17191F]"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-[#08090D] via-[#08090D]/60 to-transparent"></div>
+<div class="absolute top-3 left-3 w-7 h-7 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-xs font-semibold text-white/90">晚</div>
+<div class="absolute bottom-3 left-3 right-3">
+<div class="text-[15px] font-semibold text-[#F5F5F7]">晚晴</div>
+<p class="text-[11px] text-[#A2A5AF] mt-0.5">理性从容，生活答疑导师</p>
+</div>
+</div>
+<!-- Rec 2: 江驰 -->
+<div class="h-[180px] rounded-[24px] overflow-hidden relative border border-white/10 card-solid">
+<div class="absolute inset-0 bg-gradient-to-br from-[#222E3A] via-[#1C232B] to-[#17191F]"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-[#08090D] via-[#08090D]/60 to-transparent"></div>
+<div class="absolute top-3 left-3 w-7 h-7 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-xs font-semibold text-white/90">江</div>
+<div class="absolute bottom-3 left-3 right-3">
+<div class="text-[15px] font-semibold text-[#F5F5F7]">江驰</div>
+<p class="text-[11px] text-[#A2A5AF] mt-0.5">活力明朗，晨练打卡搭子</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Liquid Glass Bottom Tab Bar (首页 选中态) -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-[270px] h-[60px] rounded-full liquid-glass flex items-center justify-between p-1.5 z-40">
+<div class="flex-1 h-full rounded-full liquid-glass-accent flex items-center justify-center gap-2 cursor-pointer">
+<svg class="w-5 h-5 text-[#C2B7FF]" fill="currentColor" viewBox="0 0 24 24"><path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"></path><path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z"></path></svg>
+<span class="text-xs font-semibold text-white">首页</span>
+</div>
+<div class="flex-1 h-full rounded-full flex items-center justify-center gap-2 text-[#A2A5AF] hover:text-white cursor-pointer transition-colors">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span class="text-xs font-medium">我的</span>
+</div>
+</div>
+<!-- Home Indicator -->
+<div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/40 rounded-full z-40"></div>
+</div>
+<!-- ========================================== -->
+<!-- SCREEN 2: 我的 (Profile) -->
+<!-- ========================================== -->
+<div class="w-[402px] h-[874px] rounded-[44px] overflow-hidden bg-[#08090D] border border-white/15 shadow-2xl relative flex flex-col shrink-0 select-none">
+<!-- Screen Tag -->
+<div class="absolute top-2 left-6 z-40 text-[10px] font-mono tracking-wider text-white/30 uppercase pointer-events-none">02 · 我的</div>
+<!-- Status Bar -->
+<div class="w-full h-12 pt-3 px-8 flex justify-between items-center text-xs font-semibold text-white/90 z-30 select-none">
+<span class="">9:41</span>
+<div class="flex items-center gap-1.5 text-sm">
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" opacity="0.3"></path><path d="M12 6c-3.31 0-6 2.69-6 6 0 1.48.54 2.83 1.43 3.89L12 19l4.57-3.11c.89-1.06 1.43-2.41 1.43-3.89 0-3.31-2.69-6-6-6z"></path></svg>
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"></path></svg>
+<div class="w-5 h-2.5 border border-white/80 rounded-sm p-0.5 flex items-center">
+<div class="h-full w-3/4 bg-white rounded-2xs"></div>
+</div>
+</div>
+</div>
+<!-- Top Right Glass Settings Button -->
+<div class="px-5 pt-1 flex justify-end">
+<button class="w-10 h-10 rounded-full liquid-glass flex items-center justify-center text-white/90 shadow-md">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto px-5 pt-2 pb-28">
+<!-- Centered User Profile Header -->
+<div class="flex flex-col items-center text-center mb-6">
+<div class="relative w-20 h-20 rounded-full p-0.5 liquid-glass-accent mb-3 shadow-lg">
+<div class="w-full h-full rounded-full bg-gradient-to-tr from-[#2A2B36] to-[#3B3850] flex items-center justify-center text-2xl font-bold text-[#C2B7FF] border border-white/20">遇</div>
+<div class="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-[#17191F] border border-white/20 flex items-center justify-center text-[#C2B7FF]">
+<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg>
+</div>
+</div>
+<h3 class="text-[20px] font-bold text-[#F5F5F7]">岛屿来信</h3>
+<p class="text-[13px] text-[#A2A5AF] mt-1">把日常，说给懂你的人听</p>
+</div>
+<!-- Wide Account Settings Entry Button -->
+<div class="w-full h-[52px] rounded-[22px] liquid-glass flex items-center justify-between px-4 mb-6 cursor-pointer hover:border-white/25 transition-all">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/90">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<span class="text-sm font-semibold text-[#F5F5F7]">账号设置</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">已配置</span>
+<svg class="w-4 h-4 text-[#A2A5AF]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+</div>
+<!-- Subtle Divider -->
+<div class="w-full h-px bg-white/10 mb-6"></div>
+<!-- Section: 历史记录 -->
+<div>
+<div class="flex items-center justify-between mb-3 px-1">
+<h4 class="text-[20px] font-bold text-[#F5F5F7] tracking-tight">历史记录</h4>
+<span class="text-xs text-[#A2A5AF] hover:text-[#C2B7FF] cursor-pointer">查看全部</span>
+</div>
+<!-- List of History Banner Cards -->
+<div class="space-y-3">
+<!-- Card 1: 小雅 -->
+<div class="h-[102px] rounded-[24px] card-solid border border-white/10 p-3.5 flex items-center justify-between relative overflow-hidden group">
+<div class="flex items-center gap-3.5 z-10">
+<div class="w-14 h-14 rounded-2xl overflow-hidden border border-white/20 shrink-0">
+<img alt="小雅" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIKYNduBoc9pN1Zz731E6iMnLaFaDapODidcxOkb3kinKSK4KgfHU2c8LN72ECW47x9V1DVXg0KHahw7UDW3vKkBHzBdKhXEhFJ__F88zeRlznQD1EGN85aDsKlfhc7_M2K_S0lTyWU8j0aus1Z9-rSo8_8U7DWVCWZ_r0xYPrXAk_BC6wj-FJP_7bsmgxoMfKO8E2isT6fvFlilFeEvWbR7pl8Z6Y4Z3Hf4B0X78">
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-[16px] font-semibold text-[#F5F5F7]">小雅</span>
+<span class="text-[11px] px-2 py-0.5 rounded-full bg-white/5 text-[#A2A5AF] border border-white/10">已结束</span>
+</div>
+<div class="flex items-center gap-2.5 text-[12px] text-[#A2A5AF] mt-1.5">
+<span class="">今天 20:36</span>
+<span class="">·</span>
+<span class="text-white/80">12 分 08 秒</span>
+</div>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full liquid-glass flex items-center justify-center text-white/70 z-10">
+<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
+</button>
+</div>
+<!-- Card 2: 晚晴 -->
+<div class="h-[102px] rounded-[24px] card-solid border border-white/10 p-3.5 flex items-center justify-between relative overflow-hidden group">
+<div class="flex items-center gap-3.5 z-10">
+<div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#2D2A3E] to-[#1E202B] border border-white/15 flex items-center justify-center text-lg font-bold text-white shrink-0">
+                    晚
+                  </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-[16px] font-semibold text-[#F5F5F7]">晚晴</span>
+<span class="text-[11px] px-2 py-0.5 rounded-full bg-white/5 text-[#A2A5AF] border border-white/10">已结束</span>
+</div>
+<div class="flex items-center gap-2.5 text-[12px] text-[#A2A5AF] mt-1.5">
+<span class="">昨天 22:10</span>
+<span class="">·</span>
+<span class="text-white/80">08 分 45 秒</span>
+</div>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full liquid-glass flex items-center justify-center text-white/70 z-10">
+<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Liquid Glass Bottom Tab Bar (我的 选中态) -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-[270px] h-[60px] rounded-full liquid-glass flex items-center justify-between p-1.5 z-40">
+<div class="flex-1 h-full rounded-full flex items-center justify-center gap-2 text-[#A2A5AF] hover:text-white cursor-pointer transition-colors">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span class="text-xs font-medium">首页</span>
+</div>
+<div class="flex-1 h-full rounded-full liquid-glass-accent flex items-center justify-center gap-2 cursor-pointer">
+<svg class="w-5 h-5 text-[#C2B7FF]" fill="currentColor" viewBox="0 0 24 24"><path clip-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" fill-rule="evenodd"></path></svg>
+<span class="text-xs font-semibold text-white">我的</span>
+</div>
+</div>
+<!-- Home Indicator -->
+<div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/40 rounded-full z-40"></div>
+</div>
+<!-- ========================================== -->
+<!-- SCREEN 3: 创建新角色 (Create Character - 完整表单，无遮挡) -->
+<!-- ========================================== -->
+<div class="w-[402px] h-[874px] rounded-[44px] overflow-hidden bg-[#08090D] border border-white/15 shadow-2xl relative flex flex-col shrink-0 select-none">
+<!-- Screen Tag -->
+<div class="absolute top-2 left-6 z-40 text-[10px] font-mono tracking-wider text-white/30 uppercase pointer-events-none">03 · 创建新角色</div>
+<!-- Status Bar -->
+<div class="w-full h-12 pt-3 px-8 flex justify-between items-center text-xs font-semibold text-white/90 z-20 select-none">
+<span class="">9:41</span>
+<div class="flex items-center gap-1.5 text-sm">
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" opacity="0.3"></path><path d="M12 6c-3.31 0-6 2.69-6 6 0 1.48.54 2.83 1.43 3.89L12 19l4.57-3.11c.89-1.06 1.43-2.41 1.43-3.89 0-3.31-2.69-6-6-6z"></path></svg>
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"></path></svg>
+<div class="w-5 h-2.5 border border-white/80 rounded-sm p-0.5 flex items-center">
+<div class="h-full w-3/4 bg-white rounded-2xs"></div>
+</div>
+</div>
+</div>
+<!-- Top Nav Bar: 返回键 < + 标题「创建新角色」 + 右上角关闭 ✕ -->
+<div class="w-full h-12 px-5 flex items-center justify-between z-20 bg-transparent">
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center text-white/90 hover:text-white bg-transparent transition-colors">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.75 19.5L8.25 12l7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+<h3 class="text-[17px] font-semibold text-[#F5F5F7] tracking-tight">创建新角色</h3>
+</div>
+<div class="w-8 h-8"></div>
+</div>
+<!-- Form Scroll Area: 独立完整展示，全程无遮挡 -->
+<div class="flex-1 overflow-y-auto px-5 pt-3 pb-8 space-y-3.5">
+<!-- 大图/照片上传区 (深灰色大卡片 + 居中叠加头像与“+”图标 + 底部版权提示) -->
+<div>
+<div class="w-full h-[178px] rounded-[24px] card-solid border border-white/10 relative overflow-hidden flex flex-col items-center justify-center group cursor-pointer hover:border-[#C2B7FF]/40 transition-all bg-gradient-to-b from-[#1C1E26] to-[#121318]">
+<div class="absolute inset-0 bg-radial from-[#C2B7FF]/5 via-transparent to-transparent pointer-events-none"></div>
+<div class="relative flex items-center justify-center mb-2">
+<div class="w-16 h-16 rounded-2xl overflow-hidden border border-white/20 shadow-lg">
+<img alt="小雅头像" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIKYNduBoc9pN1Zz731E6iMnLaFaDapODidcxOkb3kinKSK4KgfHU2c8LN72ECW47x9V1DVXg0KHahw7UDW3vKkBHzBdKhXEhFJ__F88zeRlznQD1EGN85aDsKlfhc7_M2K_S0lTyWU8j0aus1Z9-rSo8_8U7DWVCWZ_r0xYPrXAk_BC6wj-FJP_7bsmgxoMfKO8E2isT6fvFlilFeEvWbR7pl8Z6Y4Z3Hf4B0X78">
+</div>
+<div class="w-6 h-6 rounded-full bg-white/95 text-[#121317] border border-white/40 -ml-2.5 -mt-8 flex items-center justify-center shadow-md">
+<svg class="w-3.5 h-3.5 font-bold" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4.5v15m7.5-7.5h-15" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+</div>
+<span class="text-sm font-medium text-white/90">上传照片</span>
+</div>
+<p class="text-[11px] text-[#A2A5AF]/70 text-center mt-1.5">限使用自有版权或已获授权的图片</p>
+</div>
+<!-- Field: 名称 * (0/10 计数器) -->
+<div>
+<div class="flex items-center justify-between mb-1 px-0.5">
+<label class="text-xs font-medium text-white/90">名称 <span class="text-[#C2B7FF]">*</span></label>
+<span class="text-[11px] text-[#A2A5AF]">0/10</span>
+</div>
+<div class="h-11 px-3.5 rounded-[16px] card-solid border border-white/10 flex items-center justify-between focus-within:border-[#C2B7FF]/50 transition-colors">
+<input class="bg-transparent border-none text-[13px] text-[#F5F5F7] placeholder-[#A2A5AF]/50 focus:outline-none w-full p-0 font-normal" placeholder="输入名称" type="text" value="">
+</div>
+</div>
+<!-- Field: 角色描述 ⓘ (0/5000 计数，结构化说明提示词) -->
+<div>
+<div class="flex items-center justify-between mb-1 px-0.5">
+<div class="flex items-center gap-1.5">
+<label class="text-xs font-medium text-white/90">角色描述</label>
+<div class="w-3.5 h-3.5 rounded-full border border-white/30 flex items-center justify-center text-[9px] text-[#A2A5AF] font-bold">i</div>
+</div>
+<span class="text-[11px] text-[#A2A5AF]">0/5000</span>
+</div>
+<div class="p-3 rounded-[18px] card-solid border border-white/10 text-xs text-[#A2A5AF] leading-relaxed space-y-1">
+<p class="text-[12px] text-[#A2A5AF]/80">性别/年龄：角色的性别与年龄，如 女生/24岁</p>
+<p class="text-[12px] text-[#A2A5AF]/80">职业：角色的职业，如 咨询师</p>
+<p class="text-[12px] text-[#A2A5AF]/80">性格：角色的风格与气质，如 活泼机灵</p>
+<p class="text-[12px] text-[#A2A5AF]/80">语言风格：角色的说话风格，如 幽默型</p>
+</div>
+</div>
+<!-- Field: 知识库 ⓘ Beta (蓝色高亮胶囊 + 选择文档按钮及格式提示) -->
+<div>
+<div class="flex items-center gap-1.5 mb-1.5 px-0.5">
+<label class="text-xs font-medium text-white/90">知识库</label>
+<div class="w-3.5 h-3.5 rounded-full border border-white/30 flex items-center justify-center text-[9px] text-[#A2A5AF] font-bold">i</div>
+<span class="px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-[#2653EB]/35 text-[#86AAFF] border border-[#2653EB]/60">Beta</span>
+</div>
+<button class="w-full h-11 rounded-[16px] card-solid border border-white/10 flex items-center justify-center gap-2 text-xs font-medium text-[#F5F5F7] hover:border-white/20 transition-all">
+<svg class="w-4 h-4 text-[#C2B7FF]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span class="">选择文档</span>
+</button>
+<p class="text-[11px] text-[#A2A5AF]/70 text-center mt-1.5">支持上传 TXT / DOC / DOCX（上传成功后预计五分钟生效）</p>
+</div>
+<!-- Field: 音色 选择行 (右侧带进入箭头 >) -->
+<div>
+<label class="block text-xs font-medium text-white/90 mb-1.5 px-0.5">音色</label>
+<div class="h-12 px-3.5 rounded-[16px] card-solid border border-white/10 flex items-center justify-between cursor-pointer hover:border-white/25 transition-all">
+<span class="text-xs font-medium text-white/80">选择音色</span>
+<svg class="w-4 h-4 text-[#A2A5AF]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+</div>
+<!-- 底部提交操作按钮 -->
+<div class="pt-2">
+<button class="w-full h-12 rounded-full bg-[#E5E5EA] text-[#121317] font-bold text-sm shadow-xl hover:brightness-105 active:scale-98 transition-all flex items-center justify-center">
+提交
+</button>
+</div>
+</div>
+<!-- Home Indicator -->
+<div class="w-full py-2 flex justify-center z-20">
+<div class="w-32 h-1 bg-white/40 rounded-full"></div>
+</div>
+</div>
+<!-- ========================================== -->
+<!-- SCREEN 4: 选择音色 (Voice Selection Drawer / Modal) -->
+<!-- ========================================== -->
+<div class="w-[402px] h-[874px] rounded-[44px] overflow-hidden bg-[#08090D] border border-white/15 shadow-2xl relative flex flex-col shrink-0 select-none">
+<!-- Screen Tag -->
+<div class="absolute top-2 left-6 z-40 text-[10px] font-mono tracking-wider text-white/30 uppercase pointer-events-none">04 · 选择音色</div>
+<!-- Background Dimmed & Blurred Preview Layer (呈现底层表单上下文) -->
+<div class="absolute inset-0 p-5 pt-14 opacity-25 filter blur-[3px] pointer-events-none space-y-4">
+<div class="w-full h-36 rounded-2xl bg-white/10"></div>
+<div class="w-full h-10 rounded-xl bg-white/10"></div>
+<div class="w-full h-24 rounded-xl bg-white/10"></div>
+<div class="w-full h-12 rounded-xl bg-white/10"></div>
+</div>
+<div class="absolute inset-0 bg-black/60 pointer-events-none"></div>
+<!-- Status Bar -->
+<div class="w-full h-12 pt-3 px-8 flex justify-between items-center text-xs font-semibold text-white/90 z-30 select-none">
+<span class="">9:41</span>
+<div class="flex items-center gap-1.5 text-sm">
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" opacity="0.3"></path><path d="M12 6c-3.31 0-6 2.69-6 6 0 1.48.54 2.83 1.43 3.89L12 19l4.57-3.11c.89-1.06 1.43-2.41 1.43-3.89 0-3.31-2.69-6-6-6z"></path></svg>
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"></path></svg>
+<div class="w-5 h-2.5 border border-white/80 rounded-sm p-0.5 flex items-center">
+<div class="h-full w-3/4 bg-white rounded-2xs"></div>
+</div>
+</div>
+</div>
+<!-- Modal Container (完整占满下半屏高保真展现) -->
+<div class="mt-auto w-full h-[710px] liquid-glass-modal rounded-t-[34px] z-30 flex flex-col shadow-2xl border-t border-white/20">
+<!-- 顶部拖拽手柄 Grab bar -->
+<div class="w-full pt-3 pb-1 flex justify-center">
+<div class="w-10 h-1 bg-white/35 rounded-full"></div>
+</div>
+<!-- 面板 Header: 标题 + 关闭 ✕ -->
+<div class="px-5 py-2.5 flex items-center justify-between">
+<h4 class="text-[17px] font-bold text-[#F5F5F7] tracking-tight">选择音色</h4>
+<button class="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:text-white">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+<!-- 分类切换 Tab: 我的 / 全部 (激活带下划线/高光) / 男声 / 女声 -->
+<div class="px-5 flex items-center gap-6 border-b border-white/10 text-xs font-medium pb-2 text-[#A2A5AF]">
+<span class="hover:text-white cursor-pointer">我的</span>
+<span class="text-[#F5F5F7] font-semibold relative pb-2 cursor-pointer">
+全部
+<div class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#F5F5F7] rounded-full"></div>
+</span>
+<span class="hover:text-white cursor-pointer">男声</span>
+<span class="hover:text-white cursor-pointer">女声</span>
+</div>
+<!-- 音色卡片列表 (展示 6 款高保真卡片) -->
+<div class="flex-1 overflow-y-auto px-4 py-3 space-y-2.5">
+<!-- Item 1: 天津小哥 -->
+<div class="h-[62px] px-3.5 rounded-[18px] card-solid border border-white/10 flex items-center justify-between hover:border-white/20 transition-all">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#697A9B] via-[#7B7B9E] to-[#A393B5] flex items-center justify-center shadow-md shrink-0">
+<svg class="w-4 h-4 text-white fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+</div>
+<div>
+<div class="text-[13px] font-semibold text-[#F5F5F7]">天津小哥</div>
+<div class="text-[11px] text-[#A2A5AF]">幽默天津话</div>
+</div>
+</div>
+<button class="px-4 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-medium text-white border border-white/10">
+选择
+</button>
+</div>
+<!-- Item 2: 里昂 -->
+<div class="h-[62px] px-3.5 rounded-[18px] card-solid border border-white/10 flex items-center justify-between hover:border-white/20 transition-all">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#1E7B68] via-[#245D8E] to-[#2B4B96] flex items-center justify-center shadow-md shrink-0">
+<svg class="w-4 h-4 text-white fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+</div>
+<div>
+<div class="text-[13px] font-semibold text-[#F5F5F7]">里昂</div>
+<div class="text-[11px] text-[#A2A5AF]">故事感男声</div>
+</div>
+</div>
+<button class="px-4 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-medium text-white border border-white/10">
+选择
+</button>
+</div>
+<!-- Item 3: 磁性男声 -->
+<div class="h-[62px] px-3.5 rounded-[18px] card-solid border border-white/10 flex items-center justify-between hover:border-white/20 transition-all">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#7B2E24] via-[#912D38] to-[#B34545] flex items-center justify-center shadow-md shrink-0">
+<svg class="w-4 h-4 text-white fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+</div>
+<div>
+<div class="text-[13px] font-semibold text-[#F5F5F7]">磁性男声</div>
+<div class="text-[11px] text-[#A2A5AF]">低沉性感男声</div>
+</div>
+</div>
+<button class="px-4 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-medium text-white border border-white/10">
+选择
+</button>
+</div>
+<!-- Item 4: 米娅 (激活高亮态) -->
+<div class="h-[62px] px-3.5 rounded-[18px] card-solid border border-[#C2B7FF]/50 bg-[#C2B7FF]/10 flex items-center justify-between transition-all">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#41538C] via-[#5F5389] to-[#8C6D98] flex items-center justify-center shadow-md shrink-0 ring-2 ring-[#C2B7FF]/60">
+<svg class="w-4 h-4 text-white fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+</div>
+<div>
+<div class="text-[13px] font-semibold text-[#F5F5F7] flex items-center gap-1.5">
+<span class="">米娅</span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#C2B7FF]"></span>
+</div>
+<div class="text-[11px] text-[#C2B7FF]/90">甜美优雅</div>
+</div>
+</div>
+<button class="px-4 py-1.5 rounded-xl bg-[#C2B7FF] text-[#121317] text-xs font-semibold shadow-sm">
+已选择
+</button>
+</div>
+<!-- Item 5: 性感女声 -->
+<div class="h-[62px] px-3.5 rounded-[18px] card-solid border border-white/10 flex items-center justify-between hover:border-white/20 transition-all">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#31694F] via-[#48785E] to-[#6FA082] flex items-center justify-center shadow-md shrink-0">
+<svg class="w-4 h-4 text-white fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+</div>
+<div>
+<div class="text-[13px] font-semibold text-[#F5F5F7]">性感女声</div>
+<div class="text-[11px] text-[#A2A5AF]">性感御姐</div>
+</div>
+</div>
+<button class="px-4 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-medium text-white border border-white/10">
+选择
+</button>
+</div>
+<!-- Item 6: 成都女孩 -->
+<div class="h-[62px] px-3.5 rounded-[18px] card-solid border border-white/10 flex items-center justify-between hover:border-white/20 transition-all">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#583973] via-[#7B4254] to-[#A05A32] flex items-center justify-center shadow-md shrink-0">
+<svg class="w-4 h-4 text-white fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+</div>
+<div>
+<div class="text-[13px] font-semibold text-[#F5F5F7]">成都女孩</div>
+<div class="text-[11px] text-[#A2A5AF]">成都女生口音</div>
+</div>
+</div>
+<button class="px-4 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-medium text-white border border-white/10">
+选择
+</button>
+</div>
+</div>
+<!-- 抽屉底部 Home Indicator -->
+<div class="py-2.5 flex justify-center">
+<div class="w-32 h-1 bg-white/40 rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- ========================================== -->
+<!-- SCREEN 5: 实时通话 (Real-time Video Call) -->
+<!-- ========================================== -->
+<!-- ==========================================
+     SCREEN 05: 正在连接 Loading (Call Connecting)
+     ========================================== -->
+<div class="w-[402px] h-[874px] rounded-[44px] overflow-hidden bg-gradient-to-b from-[#141013] via-[#0d0b0f] to-[#040405] border border-white/15 shadow-2xl relative flex flex-col shrink-0 select-none justify-between">
+<!-- Screen Tag -->
+<div class="absolute top-2 left-6 z-40 text-[10px] font-mono tracking-wider text-white/30 uppercase pointer-events-none">05 · 正在连接 Loading</div>
+<!-- Subtle Ambient Glow -->
+<div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-[#C2B7FF]/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Status Bar -->
+<div class="w-full h-12 pt-3 px-8 flex justify-between items-center text-xs font-semibold text-white/90 z-30 select-none">
+<span class="">9:41</span>
+<div class="flex items-center gap-1.5 text-sm">
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" opacity="0.3"></path><path d="M12 6c-3.31 0-6 2.69-6 6 0 1.48.54 2.83 1.43 3.89L12 19l4.57-3.11c.89-1.06 1.43-2.41 1.43-3.89 0-3.31-2.69-6-6-6z"></path></svg>
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"></path></svg>
+<div class="w-5 h-2.5 border border-white/80 rounded-sm p-0.5 flex items-center">
+<div class="h-full w-3/4 bg-white rounded-2xs"></div>
+</div>
+</div>
+</div>
+<!-- Center Content: Dot Matrix Audio Waves + Avatar + Connection Status -->
+<div class="flex-1 flex flex-col items-center justify-center px-6 relative z-10 -mt-6">
+<!-- Ripple Audio Particles & Concentric Dot Rings -->
+<div class="relative w-64 h-64 flex items-center justify-center mb-8">
+<!-- Outer Dotted Rings (Particle Wave Representation) -->
+<svg class="absolute inset-0 w-full h-full text-white/20 animate-pulse pointer-events-none" viewBox="0 0 260 260">
+<circle cx="130" cy="130" fill="none" opacity="0.35" r="120" stroke="currentColor" stroke-dasharray="3, 9" stroke-width="1.5"></circle>
+<circle cx="130" cy="130" fill="none" opacity="0.55" r="100" stroke="currentColor" stroke-dasharray="4, 8" stroke-width="2"></circle>
+<circle cx="130" cy="130" fill="none" opacity="0.75" r="80" stroke="currentColor" stroke-dasharray="3, 7" stroke-width="2"></circle>
+<circle cx="130" cy="130" fill="none" opacity="0.9" r="60" stroke="currentColor" stroke-dasharray="2, 6" stroke-width="2"></circle>
+</svg>
+<!-- Ambient Soft Ripple Pulse -->
+<div class="absolute w-44 h-44 rounded-full border border-white/10 bg-white/5 animate-pulse"></div>
+<div class="absolute w-36 h-36 rounded-full border border-[#C2B7FF]/25 bg-[#C2B7FF]/10"></div>
+<!-- Circular Xiaoya Avatar -->
+<div class="relative z-10 w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-white/20 to-white/5 shadow-2xl border border-white/25 backdrop-blur-md">
+<img alt="小雅" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIKYNduBoc9pN1Zz731E6iMnLaFaDapODidcxOkb3kinKSK4KgfHU2c8LN72ECW47x9V1DVXg0KHahw7UDW3vKkBHzBdKhXEhFJ__F88zeRlznQD1EGN85aDsKlfhc7_M2K_S0lTyWU8j0aus1Z9-rSo8_8U7DWVCWZ_r0xYPrXAk_BC6wj-FJP_7bsmgxoMfKO8E2isT6fvFlilFeEvWbR7pl8Z6Y4Z3Hf4B0X78">
+</div>
+</div>
+<!-- Status Heading & Descriptive Subtitle -->
+<div class="text-center space-y-2 max-w-[280px]">
+<h3 class="text-[21px] font-bold tracking-tight text-white flex items-center justify-center gap-1.5">
+<span class="">正在准备与 小雅 通话...</span>
+</h3>
+<p class="text-[13px] text-[#A2A5AF] font-normal leading-relaxed">
+        小雅，一个生活感日常倾听伙伴
+      </p>
+<div class="flex items-center justify-center gap-1 pt-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#C2B7FF] animate-pulse"></span>
+<span class="text-[11px] text-[#C2B7FF]/80">正在加载音色与实时情感模型</span>
+</div>
+</div>
+</div>
+<!-- Bottom Controls: Circular White Close/Cancel Button with Red Cross -->
+<div class="pb-12 z-20 flex flex-col items-center justify-center">
+<button class="w-14 h-14 rounded-full bg-white text-[#FF3B30] flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all cursor-pointer border border-white/80">
+<svg class="w-6 h-6 stroke-current stroke-2" fill="none" viewBox="0 0 24 24">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<span class="text-[11px] text-[#A2A5AF]/70 mt-2.5 font-medium">取消连接</span>
+</div>
+<!-- Home Indicator -->
+<div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/40 rounded-full z-40"></div>
+</div><div class="w-[402px] h-[874px] rounded-[44px] overflow-hidden bg-[#08090D] border border-white/15 shadow-2xl relative flex flex-col shrink-0 select-none">
+<!-- Screen Tag -->
+<div class="absolute top-2 left-6 z-40 text-[10px] font-mono tracking-wider text-white/30 uppercase pointer-events-none">06 · 实时通话</div>
+<!-- Background Fullscreen Video/Avatar of Xiaoya -->
+<img alt="实时通话 小雅" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIKYNduBoc9pN1Zz731E6iMnLaFaDapODidcxOkb3kinKSK4KgfHU2c8LN72ECW47x9V1DVXg0KHahw7UDW3vKkBHzBdKhXEhFJ__F88zeRlznQD1EGN85aDsKlfhc7_M2K_S0lTyWU8j0aus1Z9-rSo8_8U7DWVCWZ_r0xYPrXAk_BC6wj-FJP_7bsmgxoMfKO8E2isT6fvFlilFeEvWbR7pl8Z6Y4Z3Hf4B0X78">
+<!-- Optical Depth & Glass Refraction Overlay Gradient -->
+<div class="absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-black/80 pointer-events-none"></div>
+<!-- Status Bar -->
+<div class="w-full h-12 pt-3 px-8 flex justify-between items-center text-xs font-semibold text-white/90 z-30 select-none">
+<span class="">9:41</span>
+<div class="flex items-center gap-1.5 text-sm">
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" opacity="0.3"></path><path d="M12 6c-3.31 0-6 2.69-6 6 0 1.48.54 2.83 1.43 3.89L12 19l4.57-3.11c.89-1.06 1.43-2.41 1.43-3.89 0-3.31-2.69-6-6-6z"></path></svg>
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"></path></svg>
+<div class="w-5 h-2.5 border border-white/80 rounded-sm p-0.5 flex items-center">
+<div class="h-full w-3/4 bg-white rounded-2xs"></div>
+</div>
+</div>
+</div>
+<!-- Top Header & Call Status Capsule -->
+<div class="px-5 pt-2 flex items-center justify-between z-20">
+<div class="h-9 px-3.5 rounded-full liquid-glass flex items-center gap-2 text-xs">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+<span class="font-semibold text-white">小雅 · 通话中</span>
+<span class="text-white/60">08:26</span>
+</div>
+</div>
+<!-- Center Face Breathing Room - Clear viewport for face -->
+<div class="flex-1"></div>
+<!-- Subtitles Capsule Bar -->
+<div class="px-6 mb-4 z-20 flex justify-center">
+<div class="max-w-[340px] px-4 py-2.5 rounded-2xl liquid-glass text-center border border-white/15 shadow-xl">
+<p class="text-sm font-medium text-[#F5F5F7] tracking-wide leading-relaxed">
+“今天有什么想和我分享的吗？”
+</p>
+</div>
+</div>
+<!-- Bottom Controls Hierarchy -->
+<div class="px-5 pb-8 z-20 space-y-3"><!-- Layer 1: Elegant Interactive Tap-to-Type Capsule Bar -->
+<div class="flex items-center gap-2">
+  <button class="flex-1 h-11 rounded-full liquid-glass px-4 flex items-center justify-between cursor-pointer border border-white/20 hover:border-[#C2B7FF]/40 hover:bg-white/10 active:scale-98 transition-all group shadow-lg text-left">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <div class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[#C2B7FF] group-hover:bg-[#C2B7FF]/20 transition-colors shrink-0">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.377 3.746 2.25 5.14 2.25 6.741v6.768z"></path>
+        </svg>
+      </div>
+      <span class="text-xs text-[#A2A5AF] group-hover:text-white/90 transition-colors truncate">想说的话，也可以打字...</span>
+    </div>
+    <div class="flex items-center gap-1.5 shrink-0 pl-2">
+      <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/70 group-hover:text-[#C2B7FF] border border-white/10 group-hover:border-[#C2B7FF]/30 transition-all font-medium">发送</span>
+    </div>
+  </button>
+</div>
+<!-- Layer 2: Main Floating Control Strip (静音, 扬声器, 动作, 文字 + 挂断) -->
+<div class="h-[68px] rounded-[28px] liquid-glass px-4 flex items-center justify-between border border-white/20 shadow-2xl">
+  <!-- 静音 -->
+  <button class="flex flex-col items-center gap-1 min-w-[44px] group active:scale-95 transition-all">
+    <div class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/90 group-hover:bg-white/20 group-hover:text-[#C2B7FF] transition-all">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <span class="text-[10px] text-[#A2A5AF] group-hover:text-white transition-colors">静音</span>
+  </button>
+  <!-- 扬声器 -->
+  <button class="flex flex-col items-center gap-1 min-w-[44px] group active:scale-95 transition-all">
+    <div class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/90 group-hover:bg-white/20 group-hover:text-[#C2B7FF] transition-all">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.757 3.63 8.25 4.51 8.25H6.75z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <span class="text-[10px] text-[#A2A5AF] group-hover:text-white transition-colors">扬声器</span>
+  </button>
+  <!-- 动作 -->
+  <button class="flex flex-col items-center gap-1 min-w-[44px] group active:scale-95 transition-all">
+    <div class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/90 group-hover:bg-white/20 group-hover:text-[#C2B7FF] transition-all">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <span class="text-[10px] text-[#A2A5AF] group-hover:text-white transition-colors">动作</span>
+  </button>
+  <!-- 文字 (替换原声音按钮) -->
+  
+  <!-- 挂断 -->
+  <button class="w-12 h-12 rounded-full liquid-glass-red flex items-center justify-center text-white shadow-lg ml-1 hover:brightness-125 active:scale-95 transition-all">
+    <svg class="w-6 h-6 rotate-[135deg]" fill="currentColor" viewBox="0 0 24 24"><path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"></path></svg>
+  </button>
+</div></div>
+<!-- Home Indicator -->
+<div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/40 rounded-full z-40"></div>
+</div>
+</div>
+</div>
+<!-- Design Notes Footer -->
+<div class="w-full max-w-[2140px] mt-2 pt-6 border-t border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between text-xs text-[#A2A5AF] gap-4">
+<div class="flex items-center flex-wrap gap-4"><span class="font-medium text-white/90">设计亮点与原则：</span>
+<span class="">• 严格遵循 iOS 402 × 874 pt 竖屏尺度平视排布，去除遮挡与倾角</span>
+<span class="">• 六屏完整工作流闭环：首页、我的、创建角色表单、选择音色面板、正在连接Loading、实时通话</span>
+<span class="">• 独立呈现「正在连接 Loading」深黑褐光晕、同心声波点阵扩散粒子环与快速取消按钮</span>
+<span class="">• 独立呈现「选择音色」模态浮层、分类 Tab 切换与 6 组渐变声波卡片</span>
+<span class="">• 真实液态玻璃光学折射与柔和暗色衬底保证可读性</span></div>
+<div class="text-white/50">© 小遇 XiaoYu · AI 数字人陪伴平台</div>
+</div>
+
+
+</body></html>

@@ -1,0 +1,81 @@
+version: 1
+sdk:
+  flutter: 3.47.9
+  dart: 3.13.7
+coverage:
+  aggregate: 80
+  per_file: 60
+  roots:
+    - lib/domain/
+    - lib/application/
+    - lib/data/
+  exclude:
+    - lib/data/services/microphone_permission.dart
+  exclusions_reason: Microphone permission is a native bridge verified by device tests, not host unit tests.
+required_tests:
+  - test/application/call_coordinator_test.dart
+  - test/data/services/agora_rtc_test.dart
+  - test/data/services/vidu_api_test.dart
+  - test/data/services/vidu_signaling_test.dart
+  - test/data/local/persistence_test.dart
+  - test/ui/layout_matrix_test.dart
+  - test/ui/easy_controls_test.dart
+  - test/ui/native_glass_test.dart
+  - test/ui/glass_interaction_test.dart
+  - test/ui/modal_test.dart
+  - test/ui/golden_test.dart
+  - test/harness/policy_test.dart
+  - test/harness/skills_test.dart
+skill_routing:
+  kinds:
+    ui: [ui, analysis, test]
+    logic: [architecture, analysis, test]
+    dependency: [analysis]
+    native: [architecture, analysis, test]
+    docs: []
+  topics:
+    ui: [flutter-build-responsive-layout]
+    architecture: [flutter-apply-architecture-best-practices]
+    runtime: [dart-fix-runtime-errors]
+    dependency_conflict: [dart-resolve-package-conflicts]
+    cli: [dart-build-cli-app]
+    test: [dart-add-unit-test]
+    coverage: [dart-collect-coverage]
+    analysis: [dart-run-static-analysis]
+    localization: [flutter-setup-localization]
+    mocks: [dart-generate-test-mocks]
+    paths: [dart-use-path-package]
+    ffi: [dart-setup-ffi-assets, dart-use-ffigen]
+    api_docs: [dart-write-documentation, dart-use-doc-examples]
+    patterns: [dart-use-pattern-matching]
+    primary_constructors: [dart-use-primary-constructors]
+    checks: [dart-migrate-to-checks-package]
+  paths:
+    - prefix: lib/ui/
+      topics: [ui]
+    - prefix: lib/domain/
+      topics: [architecture]
+    - prefix: lib/application/
+      topics: [architecture]
+    - prefix: lib/l10n/
+      topics: [localization]
+    - prefix: tool/
+      topics: [cli, analysis, test]
+    - prefix: test/
+      topics: [test]
+    - prefix: integration_test/
+      topics: [test]
+matrix:
+  sizes: [[320, 568], [360, 800], [402, 874]]
+  orientations: [portrait]
+  platforms: [android, ios]
+  locales: [zh, en]
+  scales: [1.0, 2.0]
+  pages: [home, me, account, editor, settings, history, history_detail, connecting, call, pending, voices, assets, confirm, route]
+  states: [loading, empty, error, long_content]
+  keyboard: [account, editor, call]
+timeouts_seconds:
+  command: 300
+  check_tests: 1200
+  build: 900
+  device: 300
