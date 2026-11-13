@@ -69,6 +69,10 @@ class FakeEngine implements RtcEngine {
       operations.add('mute:$mute');
 
   @override
+  Future<void> adjustPlaybackSignalVolume(int volume) async =>
+      operations.add('playback:$volume');
+
+  @override
   Future<void> enableLocalAudio(bool enabled) async =>
       operations.add('microphone:$enabled');
 
@@ -99,6 +103,21 @@ void main() {
     session = AgoraRtcSession(engineFactory: () => engine);
   });
   tearDown(() => session.dispose());
+
+  test(
+    'local playback uses volume without changing capture or subscriptions',
+    () async {
+      await session.join(info);
+      engine.operations.clear();
+      await session.mutePlayback(true);
+      await session.mutePlayback(false);
+      expect(engine.operations, ['playback:0', 'playback:100']);
+      expect(engine.options!.autoSubscribeAudio, isTrue);
+      expect(engine.options!.publishMicrophoneTrack, isTrue);
+      await session.dispose();
+      await expectLater(session.mutePlayback(true), throwsA(isA<AppFailure>()));
+    },
+  );
 
   test(
     'preserves the signed string account and disables camera before join',

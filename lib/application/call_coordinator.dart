@@ -23,7 +23,7 @@ class _Attempt {
   StreamSubscription<RtcUpdate>? media;
   Completer<void>? initialized;
   Completer<void>? voiceAck;
-  bool voiceUnknown = false;
+  bool voiceUnknown = false, playbackUpdating = false;
   Timer? preparationTimer, durationTimer;
   final clock = Stopwatch();
   Future<void>? finishing;
@@ -452,6 +452,21 @@ class CallCoordinator {
     final value = !snapshot.muted;
     await a.rtc!.mute(value);
     _emit(snapshot.copyWith(muted: value));
+  }
+
+  Future<void> togglePlayback() async {
+    final a = _interactive();
+    if (a.playbackUpdating) return;
+    a.playbackUpdating = true;
+    final value = !snapshot.playbackMuted;
+    try {
+      await a.rtc!.mutePlayback(value);
+      if (_attempt == a && !a.cancelled) {
+        _emit(snapshot.copyWith(playbackMuted: value));
+      }
+    } finally {
+      a.playbackUpdating = false;
+    }
   }
 
   Future<void> setRoute(String route) => _interactive().rtc!.route(route);

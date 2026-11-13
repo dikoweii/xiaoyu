@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
 import 'package:xiaoyu/domain/models.dart';
@@ -21,6 +21,9 @@ const routes = {
   'history_detail': '/history/offline-history',
   'connecting': '/call',
   'call': '/call',
+  'call_muted': '/call',
+  'call_composer': '/call',
+  'call_food': '/call',
   'pending': '/call',
 };
 const operations = {
@@ -28,7 +31,10 @@ const operations = {
   'editor': 'editor-save',
   'connecting': 'end-call',
   'call': 'end-call',
-  'voices': 'voice-close',
+  'voices': 'voice-select-Serena',
+  'call_muted': 'toggle-playback',
+  'call_composer': 'close-call-composer',
+  'call_food': 'close-call-composer',
   'confirm': 'confirm-cancel',
 };
 Widget? panel(String page) => switch (page) {
@@ -45,7 +51,6 @@ Widget? panel(String page) => switch (page) {
       ),
     ),
   ),
-  'route' => const AppPage(body: SingleChildScrollView(child: RoutePicker())),
   'confirm' => Builder(
     builder: (context) => AppPage(
       body: ConfirmationPanel(
@@ -57,7 +62,13 @@ Widget? panel(String page) => switch (page) {
   _ => null,
 };
 
-Finder operation(WidgetTester tester, String key) => find.byKey(Key(key));
+Finder operation(WidgetTester tester, String key) {
+  final target = find.byKey(Key(key));
+  if (target.evaluate().isNotEmpty && tester.widget(target) is AppButton) {
+    return find.descendant(of: target, matching: find.byType(Semantics)).first;
+  }
+  return target;
+}
 
 Future<void> assertReachable(WidgetTester tester, String key, Size size) async {
   final finder = operation(tester, key);
@@ -152,19 +163,39 @@ void main() {
                   longContent: true,
                   phase: page == 'connecting'
                       ? CallPhase.creating
-                      : page == 'call'
+                      : (page == 'call' ||
+                            page == 'call_muted' ||
+                            page == 'call_composer' ||
+                            page == 'call_food')
                       ? CallPhase.connected
                       : page == 'pending'
                       ? CallPhase.pending
                       : CallPhase.idle,
                 );
                 await fixture.open();
+                if (page == 'call_muted') {
+                  fixture.app.calls.snapshot = fixture.app.calls.snapshot
+                      .copyWith(playbackMuted: true);
+                }
                 addTearDown(fixture.close);
                 await fixture.pump(
                   tester,
                   route: routes[page] ?? '/',
                   page: panel(page as String),
                 );
+                if (page == 'call_composer' || page == 'call_food') {
+                  await tester.tap(find.byKey(const Key('open-call-composer')));
+                  await tester.pumpAndSettle();
+                  if (page == 'call_food') {
+                    await tester.ensureVisible(
+                      find.byKey(const Key('quick-category-food')),
+                    );
+                    await tester.tap(
+                      find.byKey(const Key('quick-category-food')),
+                    );
+                    await tester.pumpAndSettle();
+                  }
+                }
                 expect(tester.takeException(), isNull);
                 if (operations[page] case final key?) {
                   await assertReachable(tester, key, size);
@@ -221,7 +252,16 @@ void main() {
           await fixture.pump(tester, route: routes[page]!);
           final key = page == 'call' ? 'end-call' : operations[page]!;
           await assertReachable(tester, key, size);
-          if (page == 'call') await assertReachable(tester, 'chat-send', size);
+          if (page == 'call') {
+            await tester.tap(find.byKey(const Key('open-call-composer')));
+            await tester.pumpAndSettle();
+            await tester.enterText(
+              find.byKey(const Key('chat-input')),
+              'Hello',
+            );
+            await assertReachable(tester, 'chat-send', size);
+            await assertReachable(tester, 'close-call-composer', size);
+          }
           expect(tester.takeException(), isNull);
           await tester.pumpWidget(const SizedBox());
           debugDefaultTargetPlatformOverride = null;

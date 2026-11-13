@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xiaoyu/ui/account_editor.dart';
 import 'package:xiaoyu/ui/core/widgets.dart';
@@ -56,8 +56,13 @@ void main() {
           );
           await tester.tap(find.byKey(const Key('open-sheet')));
           await tester.pumpAndSettle();
-          await assertReachable(tester, 'voice-close', const Size(568, 320));
-          await tester.tap(find.byKey(const Key('voice-close')));
+          expect(find.byKey(const Key('voice-close')), findsNothing);
+          await assertReachable(
+            tester,
+            'voice-select-Serena',
+            const Size(568, 320),
+          );
+          await tester.binding.handlePopRoute();
           await tester.pumpAndSettle();
           await tester.tap(find.byKey(const Key('open-confirm')));
           await tester.pumpAndSettle();

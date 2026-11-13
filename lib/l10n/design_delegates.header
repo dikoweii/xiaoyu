@@ -1,0 +1,8 @@
+/// Uses [GlobalMaterialLocalizations.delegate] and
+/// [GlobalCupertinoLocalizations.delegate] from the standalone design libraries.
+library;
+
+// Flutter 3.50 gen-l10n still emits legacy delegate names. Import prefixes select
+// the modern delegates without modifying the generator or its generated files.
+import 'package:xiaoyu/l10n/material_delegate.dart' as GlobalMaterialLocalizations;
+import 'package:xiaoyu/l10n/cupertino_delegate.dart' as GlobalCupertinoLocalizations;

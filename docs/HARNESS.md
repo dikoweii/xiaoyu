@@ -54,6 +54,8 @@ report / finish 分别列出 code、build.android/ios、device.android/ios、vis
 
 MCP 热重载、运行错误与页面检查优先使用宿主真实记录。仓库产物只记录 CLI 能验证的内容；自述调用不能冒充可信 MCP。若无运行中的应用，保留未验证并记录 CLI 替代。真实收费通话按现有用户触发规则，所有门禁和钩子默认不创建 live。
 
+离线设备测试还使用 wakelock_plus 读取平台屏幕唤醒标志：连接及模拟通话时开启，挂断/后台后关闭。driver 必须收到 screenAwakeDuringCall 和 screenSleepRestored 两项结果，否则不能通过。这验证原生标志与生命周期接线；真实手机自然超过自动锁屏时长和真实 RTC 持续通话仍须独立验收。
+
 ## 本地钩子与自测
 
 `dart run tool/harness.dart install-hooks` 显式安装 pre-commit（check）与 pre-push（finish）。保留已有钩子，遇冲突报错；不安装全局 hook。钩子验证工作区快照；提交前应保持索引与工作区一致，避免提交另一套未验证内容。本次仅提供安装命令，不自动安装。

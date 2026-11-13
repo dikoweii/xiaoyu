@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xiaoyu/domain/models.dart';
 
@@ -20,6 +20,8 @@ void main() {
     'voices': '/',
     'connecting': '/call',
     'call': '/call',
+    'call_composer': '/call',
+    'call_food': '/call',
   };
   for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
     for (final page in pages.keys) {
@@ -38,7 +40,7 @@ void main() {
           historyCount: page == 'me' || page == 'history' ? 4 : 1,
           phase: page == 'connecting'
               ? CallPhase.creating
-              : page == 'call'
+              : page.startsWith('call')
               ? CallPhase.connected
               : CallPhase.idle,
         );
@@ -71,6 +73,17 @@ void main() {
           await tester.tap(find.byKey(const Key('choose-voice')));
           await tester.pumpAndSettle();
         }
+        if (page == 'call_composer' || page == 'call_food') {
+          await tester.tap(find.byKey(const Key('open-call-composer')));
+          await tester.pumpAndSettle();
+          if (page == 'call_food') {
+            await tester.ensureVisible(
+              find.byKey(const Key('quick-category-food')),
+            );
+            await tester.tap(find.byKey(const Key('quick-category-food')));
+            await tester.pumpAndSettle();
+          }
+        }
         expect(tester.takeException(), isNull);
         await expectLater(
           find.byType(MaterialApp),
@@ -80,7 +93,7 @@ void main() {
         debugDefaultTargetPlatformOverride = null;
       });
     }
-    for (final page in ['editor', 'call']) {
+    for (final page in ['editor', 'call', 'call_composer', 'call_food']) {
       testWidgets('golden small large text $platform $page', (tester) async {
         debugDefaultTargetPlatformOverride = platform;
         tester.view.devicePixelRatio = 1;
@@ -94,7 +107,7 @@ void main() {
           debugDefaultTargetPlatformOverride = null;
         });
         final fixture = Fixture(
-          phase: page == 'call' ? CallPhase.connected : CallPhase.idle,
+          phase: page.startsWith('call') ? CallPhase.connected : CallPhase.idle,
         );
         await fixture.open();
         addTearDown(fixture.close);
@@ -103,6 +116,17 @@ void main() {
           route: page == 'editor' ? '/edit/fixture-character' : '/call',
         );
         await tester.pumpAndSettle();
+        if (page == 'call_composer' || page == 'call_food') {
+          await tester.tap(find.byKey(const Key('open-call-composer')));
+          await tester.pumpAndSettle();
+          if (page == 'call_food') {
+            await tester.ensureVisible(
+              find.byKey(const Key('quick-category-food')),
+            );
+            await tester.tap(find.byKey(const Key('quick-category-food')));
+            await tester.pumpAndSettle();
+          }
+        }
         await expectLater(
           find.byType(MaterialApp),
           matchesGoldenFile('goldens/${platform.name}_${page}_small.png'),

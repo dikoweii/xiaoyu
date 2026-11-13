@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
 import 'design.dart';
@@ -109,16 +109,13 @@ class AppButton extends StatelessWidget {
                   ? XiaoyuDesign.dangerPressed
                   : XiaoyuDesign.glassPressed,
             ),
-            child: LiquidGlassButton(
+            child: _GlassAction(
               width: width,
               height: height,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               onPressed: onPressed,
               foregroundColor: color,
               fontSize: 13,
-              touch: MediaQuery.disableAnimationsOf(context)
-                  ? const LiquidGlassTouch()
-                  : null,
               style: XiaoyuDesign.glass(context).copyWith(
                 color: destructive
                     ? const Color(0xAA9F2327)
@@ -161,14 +158,11 @@ class AppIconButton extends StatelessWidget {
             ? XiaoyuDesign.dangerPressed
             : XiaoyuDesign.glassPressed,
       ),
-      child: LiquidGlassButton(
+      child: _GlassAction(
         width: 48,
         height: 48,
         onPressed: onPressed,
         padding: EdgeInsets.zero,
-        touch: MediaQuery.disableAnimationsOf(context)
-            ? const LiquidGlassTouch()
-            : null,
         style: XiaoyuDesign.glass(
           context,
           lite: lite,
@@ -177,6 +171,67 @@ class AppIconButton extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// The package owns the lens; modern Material owns focus and press feedback.
+class _GlassAction extends StatelessWidget {
+  const _GlassAction({
+    required this.width,
+    required this.height,
+    required this.padding,
+    required this.style,
+    required this.child,
+    this.onPressed,
+    this.foregroundColor = Colors.white,
+    this.fontSize = 16,
+  });
+
+  final double width, height, fontSize;
+  final EdgeInsetsGeometry padding;
+  final LiquidGlassStyle style;
+  final Widget child;
+  final VoidCallback? onPressed;
+  final Color foregroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final shape =
+        style.shape ??
+        LiquidGlassShape.roundedRectangle(cornerRadius: height / 2);
+    return SizedBox(
+      width: width,
+      height: height,
+      child: LiquidGlassLens(
+        style: style.copyWith(shape: shape),
+        touch: MediaQuery.disableAnimationsOf(context)
+            ? const LiquidGlassTouch()
+            : null,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(height / 2),
+            onTap: onPressed,
+            child: Padding(
+              padding: padding,
+              child: Center(
+                child: IconTheme.merge(
+                  data: IconThemeData(color: foregroundColor, size: 20),
+                  child: DefaultTextStyle.merge(
+                    style: TextStyle(
+                      color: foregroundColor,
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    child: child,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class AppField extends StatefulWidget {

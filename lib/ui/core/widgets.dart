@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart' show CupertinoIcons;
+import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -54,7 +54,14 @@ class ConfirmationPanel extends StatelessWidget {
     child: LiquidGlassAlertDialog(
       key: const Key('confirmation'),
       title: Text(title),
+      titleTextStyle: Theme.of(context).textTheme.headlineSmall
+          ?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
       content: Text(body),
+      contentTextStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: Colors.white.withAlpha(220),
+        fontSize: 14.5,
+        height: 1.4,
+      ),
       scrollable: true,
       style: XiaoyuDesign.glass(context)
           .copyWith(color: const Color(0xCC17191F)),
@@ -89,17 +96,45 @@ Future<bool> confirm(
   String title,
   String body, {
   bool destructive = false,
-}) async =>
-    await showLiquidGlassDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      transitionDuration: MediaQuery.disableAnimationsOf(context)
-          ? Duration.zero
-          : const Duration(milliseconds: 250),
-      builder: (_) =>
-          ConfirmationPanel(title: title, body: body, destructive: destructive),
-    ) ??
-    false;
+}) async {
+  final themes = InheritedTheme.capture(
+    from: context,
+    to: Navigator.of(context, rootNavigator: true).context,
+  );
+  return await showGeneralDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        barrierLabel: MaterialLocalizations.of(context)
+            .modalBarrierDismissLabel,
+        barrierColor: const Color(0x80000000),
+        transitionDuration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 250),
+        pageBuilder: (_, _, _) => themes.wrap(
+          SafeArea(
+            child: ConfirmationPanel(
+              title: title,
+              body: body,
+              destructive: destructive,
+            ),
+          ),
+        ),
+        transitionBuilder: (_, animation, _, child) => FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: .9, end: 1).animate(
+              CurvedAnimation(
+                parent: animation,
+                curve: const Cubic(.16, 1, .3, 1),
+                reverseCurve: const Cubic(.7, 0, .84, 0),
+              ),
+            ),
+            child: child,
+          ),
+        ),
+      ) ??
+      false;
+}
 
 /// Full window scroll viewport, with fixed glass chrome over the scene.
 class AppPage extends StatelessWidget {

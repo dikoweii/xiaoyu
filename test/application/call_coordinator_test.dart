@@ -112,7 +112,9 @@ class FakeRtc implements RtcSession {
   final controller = StreamController<RtcUpdate>.broadcast(sync: true);
   int joins = 0, disposals = 0;
   bool firstFrame = true, muted = false, releaseFails = false;
-  Completer<void>? releaseGate;
+  Completer<void>? releaseGate, playbackGate;
+  bool playbackMuted = false, playbackFails = false;
+  int playbackChanges = 0;
   @override
   Stream<RtcUpdate> get events => controller.stream;
   @override
@@ -131,6 +133,14 @@ class FakeRtc implements RtcSession {
   @override
   Future<void> mute(bool value) async {
     muted = value;
+  }
+
+  @override
+  Future<void> mutePlayback(bool value) async {
+    playbackChanges++;
+    await playbackGate?.future;
+    if (playbackFails) throw const AppFailure('rtcFailed');
+    playbackMuted = value;
   }
 
   @override
@@ -166,6 +176,48 @@ void main() {
   });
   tearDown(() async {
     await call.dispose();
+  });
+
+  test(
+    'playback mute is independent of microphone and preserves readiness',
+    () async {
+      await call.start(character, credential, 'profile');
+      await call.togglePlayback();
+      expect(rtc.playbackMuted, isTrue);
+      expect(call.snapshot.playbackMuted, isTrue);
+      expect(call.snapshot.muted, isFalse);
+      expect(call.snapshot.audioReady, isTrue);
+      expect(call.snapshot.interactive, isTrue);
+      await call.mute();
+      await call.togglePlayback();
+      expect(call.snapshot.playbackMuted, isFalse);
+      expect(call.snapshot.muted, isTrue);
+      expect(rtc.muted, isTrue);
+    },
+  );
+
+  test('playback failure leaves state unchanged and permits retry', () async {
+    await call.start(character, credential, 'profile');
+    rtc.playbackFails = true;
+    await expectLater(call.togglePlayback(), throwsA(isA<AppFailure>()));
+    expect(call.snapshot.playbackMuted, isFalse);
+    rtc.playbackFails = false;
+    await call.togglePlayback();
+    expect(call.snapshot.playbackMuted, isTrue);
+  });
+
+  test('deduplicates playback taps and ignores result after ending', () async {
+    await call.start(character, credential, 'profile');
+    rtc.playbackGate = Completer<void>();
+    final toggling = call.togglePlayback();
+    await call.togglePlayback();
+    expect(rtc.playbackChanges, 1);
+    expect(call.snapshot.playbackMuted, isFalse);
+    await call.end();
+    rtc.playbackGate!.complete();
+    await toggling;
+    expect(call.snapshot.playbackMuted, isFalse);
+    expect(call.snapshot.phase, CallPhase.ended);
   });
 
   test('repeated start shares one creation and one RTC room', () async {

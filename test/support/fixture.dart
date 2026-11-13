@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:drift/native.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xiaoyu/app/app.dart';
@@ -54,9 +54,11 @@ class Fixture {
     this.longContent = false,
     this.state = 'data',
     this.callsOverride,
+    this.screenAwake,
     this.historyCount = 1,
   });
   final CallCoordinator? callsOverride;
+  final Future<void> Function(bool)? screenAwake;
   final String locale;
   final int historyCount;
   final String state;
@@ -96,6 +98,9 @@ class Fixture {
       retry: (_, _) => null,
       overrides: [
         runtime.runtimeProvider.overrideWithValue(app),
+        runtime.screenAwakeProvider.overrideWithValue(
+          screenAwake ?? (_) async {},
+        ),
         runtime.officialCatalogProvider.overrideWith(
           (ref) async => empty
               ? []

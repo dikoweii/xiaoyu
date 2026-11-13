@@ -154,3 +154,48 @@ PageBody 增加 horizontal 参数，默认仍为 20，仅“我的”设为 16�
 ## 2026-11-12：替换为 2_25PM 启动图
 
 按用户最新图片替换 Android/iOS 共用的 Flutter launch.jpg，并同步 iOS 原生 LaunchImage PNG，保持现有 1.06 倍 contain/aspect fit 居中比例及应用图标。新图不含底部平台说明及版权文字，布局测试的实测文字边界同步至 y=1080。Android 12+ 原生阶段继续使用系统规定的图标启动页，Flutter 初始化首屏显示新图。无依赖、业务、权限或平台桥接变更。
+
+## 2026-11-12：提交时准备云端形象
+
+用户发现推荐角色预填后仍不能提交。原因是官网目录仅生成本地草稿与图片地址，提交却直接复用实时通话的就绪校验，遗漏账号形象创建；实际创建入口藏在高级设置。改为提交先校验文本、凭证与账号归属，再复用现有图片下载和 OpenAPI /live/v1/avatars 创建接口。已有 ID 则查询处理状态，不重复创建，旧页面草稿再次提交时优先恢复仓储已持久化的 ID。处理中保留编辑页和草稿，提示稍后再次提交检查；就绪后返回首页，失败提示重新创建或换图。高级设置仍可显式重新创建失败形象。所有自动测试使用内存 HTTP 适配器与假凭证，不创建收费 live。
+
+抽取领域文本校验与形象就绪校验，移除控制器已无调用者的 validate 保存参数；保持目录角色 ID 与账号资产 ID 分离。没有新增依赖、原生桥接或数据库结构。官方依据为现有 Vidu 图片资产接口及 https://platform.vidu.cn/vidu-stream/doc/s2-avatar/realtime/quick-start ，不使用浏览器 Cookie 或官网角色 ID 发起 OpenAPI 通话。
+
+用户已将本机 Flutter 升级到 3.50.0 / Dart 3.14.0，本轮同步 harness 的实际 SDK 版本。flutter pub get 自动更新 SDK 固定的 meta 1.19.0、test_api 0.7.14，保留其他依赖版本，不新增覆盖或降低门槛；新 SDK 的黄金图差异单独验证。
+
+新版 Gradle 会在 android/build/reports 生成问题报告，补充忽略该构建目录，避免将生成报告纳入源码指纹。当前 SDK 对旧 Material/Cupertino 导入的弃用诊断，以及 Android 所需 AGP 最低版本 9.1.1，保留为独立未通过项；本次不跨范围迁移 UI 框架或升级 Android 工具链。
+
+
+## 2026-11-12 通话界面精简及本地播放静音
+
+- 按用户截图和 design.html：高级设置、声音选择等底部面板移除标题右侧 X，保留系统返回、遮罩与拖拽关闭；通话前确认只移除 Vidu 品牌字样，保留费用、10 分钟上限与权限说明。
+- 通话顶部使用 easy 公开 LiquidGlassLens，把名称、状态、时长合成一枚玻璃胶囊；删除通话更多菜单（打断、换音色、全文弹窗）及音源选择面板。编辑角色的声音选择、通话内字幕和历史正文仍有入口。
+- 声音按钮通过领域端口 RtcSession.mutePlayback、CallCoordinator.togglePlayback 调用 Agora 官方 adjustPlaybackSignalVolume(0/100)，只改变本地远端混音播放。SDK 来源：[Agora Flutter API](https://api-ref.agora.io/en/video-sdk/flutter/6.x/API/class_irtcengine.html#api_irtcengine_adjustplaybacksignalvolume) 及当前官方包 agora_rtc_engine.dart 的方法说明。替代方案取消订阅会影响 audioReady，切换扬声器/听筒不等于静音，因此均不采用。麦克风状态独立，失败不更新状态，重复点击与取消后晚到结果有保护。
+- 连接页以 CustomPainter 的 repaint 动画驱动粒子亮度和轻微呼吸，不重建视频或头像；减少动态效果/TickerMode 关闭时停止。取消按钮为白色 56pt 圆形、红 X 与下方说明。
+- 布局矩阵用 call_muted 状态替换已删除的 route 面板，仍验证相同数量页面组合及操作可达性；黄金图由 harness golden-update 更新并检查对照。
+
+
+## 2026-11-12 通话字幕与输入区毛玻璃补充
+
+按用户新截图，顶部只保留名称与时间，移除状态文案与圆点。字幕和输入区采用 easy 公开 LiquidGlassLite（blur 10、25% 深色半透明底、边缘高光），输入框取消默认 filled 实色，保留 Flutter TextField 的输入、焦点、键盘和大字号换行。高对比度使用更深的半透明底保证可读性。范围只限这两个通话覆盖层，其他表单/卡片仍沿用现有组件决策。
+来源：当前 liquid_glass_easy 官方包 LiquidGlassLite API 文档及实现；它提供背景模糊、着色与高光，无额外折射 shader，适合字幕等文字覆盖层。替代方案是每块使用完整折射 Lens；此处优先与按钮一致的毛玻璃观感和文字可读性，避免为两块文字面板增加折射成本。
+
+## 2026-11-12：通话期间阻止自动熄屏
+
+用户反馈无触摸后到达系统自动锁屏时间会中断通话。代码未持有屏幕唤醒状态；自动锁屏触发 AppLifecycleState.paused，现有 app_background 路径随即结束会话。使用官方 wakelock_plus 1.8.2，仅在前台创建、初始化、加入和连接阶段保持屏幕亮起；结束中、失败、待核对、后台及组件释放恢复系统休眠。临时 inactive（权限或系统覆盖）不结束通话，resumed 重新声明所需状态。串行执行原生操作，防止晚到 enable 覆盖挂断后的 disable；插件错误上报运行时诊断，后续状态变化可重试，不冒充开启成功。
+
+官方依据：https://pub.dev/packages/wakelock_plus ，通过 Dart MCP 核对公开 toggle/enabled API、iOS SPM Package.swift（最低 iOS 13）、Android FLAG_KEEP_SCREEN_ON 及 iOS idleTimerDisabled 实现。该包无需额外权限；pub 正常解析新增其声明的七项依赖，保留既有版本。替代方案是自写 iOS/Android 原生桥接，或放开后台通话；前者重复官方能力，后者改变用户主动锁屏/后台结束及计费策略，均不采用。未增加 Pods、后台音频模式、前台服务或收费会话自动重试。
+
+回归覆盖各通话阶段、无交互、系统覆盖/恢复、后台结束、原生失败重试及晚到操作释放；设备离线集成读取真实原生屏幕标志，验证连接与通话开启、挂断/后台关闭，并将两项证据纳入 Harness 必验。宿主推进时间不能模拟系统锁屏，真实手机超过自动锁屏时长的验收仍需单列，不以模拟媒体测试冒充真实 RTC。
+
+为使 Android 能构建本次修复，将 AGP 从 9.1.0 升至最低要求的补丁版本 9.1.1。依据为本机 Flutter 3.50 官方 DependencyVersionChecker（errorAGPVersion=9.1.1、errorGradleVersion=9.3.1）及 Google Maven 的 9.1.1 发布 POM；保留当前 Gradle 9.3.1 和 Kotlin 配置，不使用跳过依赖校验开关。iOS 首次 SPM 更新遇到远端网络失败，使用 xcodebuild -skipPackageUpdates -onlyUsePackageVersionsFromResolvedFile 从缓存解析后构建成功，锁定的 Agora 版本未变。
+
+## 2026-11-13：迁移 Flutter 3.50 弃用 API
+
+用户要求提交前先修复严格分析中的弃用诊断。依据官方 [material_ui 迁移说明](https://pub.dev/packages/material_ui)、[cupertino_ui 迁移说明](https://pub.dev/packages/cupertino_ui)，以及 Dart MCP 读取的已安装包 README 和公开 API，执行 `dart fix --apply --code=migrate_design_widgets`，将应用、测试及离线设备测试导入迁移至独立的官方设计库。两个包原已由依赖图引入；现在显式声明 `material_ui: ^1.10.0` 和 `cupertino_ui: ^1.1.6`，保留锁文件中的现有版本。连接动画改读 Flutter 官方 `TickerMode.valuesOf(context).enabled`，继续尊重祖先动画开关与系统减少动态效果设置。
+
+本机 Flutter 3.50 的 `gen_l10n_templates.dart` 仍固定生成旧版 Material/Cupertino 本地化委托。通过官方 `l10n.yaml` 的 `header-file` 配置，使用两个导入前缀解析生成器原有的委托名称，分别指向官方设计库的公开委托；生成头文件中的库文档同时让语言子文件保留有效引用。`flutter gen-l10n`、`flutter pub get` 和自动构建仍走标准生成流程，不手改生成文件、修改 SDK、添加依赖覆盖或忽略弃用诊断。重新生成后严格分析通过。替代方案包括手改生成结果、维护 SDK 模板副本或关闭弃用门禁，均不采用。后续官方生成器迁移完成后可移除这一生成配置及两个委托转接文件。
+
+官方 `liquid_glass_easy` 当前最新版本仍为 5.2.0，按钮和对话框辅助函数内部引用旧版 Material。实际回归发现其按钮读不到现代主题的按压色，`showLiquidGlassDialog` 也要求旧类型的本地化。改为由公开 `LiquidGlassLens` 渲染按钮玻璃，官方现代 `Material`/`InkWell` 负责原有焦点、点击、按压和禁用交互；短确认仍使用公开 `LiquidGlassAlertDialog`，显式传入现有标题、正文样式，并通过现代 `showGeneralDialog` 展示，保留安全区、主题捕获、禁止遮罩关闭及缩放淡入。没有新增折射实现或私有导入。依据为 Dart MCP 读取的官方包实现、pub.dev 包元数据和 material_ui 迁移说明。官方推荐的 `MaterialUiCompatibilityBridge` 本身也已弃用，且不能完整映射项目按压主题，因此不引入全局兼容层。更新大字号测试的玻璃节点定位后，继续检查同样的文字边界；弹窗操作、长按高光、角色菜单和返回手势的原有断言全部保留。
+
+工具状态：Dart MCP 项目根已注册，包文档与实现读取成功；连接旧 IDE 的 DTD 后未发现运行中的 App，首次连接临时 DTD 曾因进程结束被拒绝，热重载与运行时错误检查无可用目标。CLI 静态分析、宿主测试、双端构建和模拟器离线流程分别记录实际结果，不将无目标的 MCP 请求视为通过，也不触发收费通话。

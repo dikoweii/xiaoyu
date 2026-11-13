@@ -142,6 +142,7 @@ class CallSnapshot {
     this.firstFrame = false,
     this.video,
     this.muted = false,
+    this.playbackMuted = false,
     this.route = 'speakerphone',
     this.error,
     this.readyAt,
@@ -151,6 +152,7 @@ class CallSnapshot {
   final String? callId, liveId, error, voice;
   final Character? character;
   final bool controlReady, joined, published, audioReady, firstFrame, muted;
+  final bool playbackMuted;
   final String route;
   final RemoteVideo? video;
   final DateTime? readyAt;
@@ -172,6 +174,7 @@ class CallSnapshot {
     bool? firstFrame,
     RemoteVideo? video,
     bool? muted,
+    bool? playbackMuted,
     String? route,
     String? error,
     DateTime? readyAt,
@@ -188,6 +191,7 @@ class CallSnapshot {
     firstFrame: firstFrame ?? this.firstFrame,
     video: video ?? this.video,
     muted: muted ?? this.muted,
+    playbackMuted: playbackMuted ?? this.playbackMuted,
     route: route ?? this.route,
     error: error ?? this.error,
     readyAt: readyAt ?? this.readyAt,
@@ -195,14 +199,20 @@ class CallSnapshot {
   );
 }
 
-Json buildSession(Character c, String profileId) {
-  if (!c.ready ||
+void validateCharacterDetails(Character c) {
+  if (c.name.trim().isEmpty ||
+      c.persona.trim().isEmpty ||
       c.name.runes.length > 30 ||
       c.persona.runes.length > 50000 ||
       c.greeting.runes.length > 200 ||
       c.voice.isEmpty) {
-    throw const AppFailure('characterIncomplete');
+    throw const AppFailure('characterFieldsIncomplete');
   }
+}
+
+Json buildSession(Character c, String profileId) {
+  validateCharacterDetails(c);
+  if (!c.ready) throw const AppFailure('characterIncomplete');
   // User text is preserved verbatim; the wrapper is explicit and predictable.
   return {
     'model': 'vidu-s2',

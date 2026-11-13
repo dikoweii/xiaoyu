@@ -1,7 +1,7 @@
 version: 1
 sdk:
-  flutter: 3.47.9
-  dart: 3.13.7
+  flutter: 3.50.0
+  dart: 3.14.0
 coverage:
   aggregate: 80
   per_file: 60
@@ -13,6 +13,7 @@ coverage:
     - lib/data/services/microphone_permission.dart
   exclusions_reason: Microphone permission is a native bridge verified by device tests, not host unit tests.
 required_tests:
+  - test/app/call_screen_awake_test.dart
   - test/application/call_coordinator_test.dart
   - test/data/services/agora_rtc_test.dart
   - test/data/services/vidu_api_test.dart
@@ -22,6 +23,8 @@ required_tests:
   - test/ui/easy_controls_test.dart
   - test/ui/native_glass_test.dart
   - test/ui/glass_interaction_test.dart
+  - test/ui/call_composer_test.dart
+  - test/presentation/quick_actions_test.dart
   - test/ui/modal_test.dart
   - test/ui/golden_test.dart
   - test/harness/policy_test.dart
@@ -71,7 +74,7 @@ matrix:
   platforms: [android, ios]
   locales: [zh, en]
   scales: [1.0, 2.0]
-  pages: [home, me, account, editor, settings, history, history_detail, connecting, call, pending, voices, assets, confirm, route]
+  pages: [home, me, account, editor, settings, history, history_detail, connecting, call, pending, voices, assets, confirm, call_muted, call_composer, call_food]
   states: [loading, empty, error, long_content]
   keyboard: [account, editor, call]
 timeouts_seconds:

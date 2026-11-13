@@ -10,6 +10,8 @@ void main() {
     'sqliteReopened': true,
     'hangupReturnedHome': true,
     'backgroundEnded': true,
+    'screenAwakeDuringCall': true,
+    'screenSleepRestored': true,
     'screenshots': [
       for (final name in [
         'home',
@@ -33,6 +35,16 @@ void main() {
     expect(() => requireOfflineReport(missing), throwsStateError);
     final incomplete = complete()..['backgroundEnded'] = false;
     expect(() => requireOfflineReport(incomplete), throwsStateError);
+    for (final flag in ['screenAwakeDuringCall', 'screenSleepRestored']) {
+      expect(
+        () => requireOfflineReport(complete()..remove(flag)),
+        throwsStateError,
+      );
+      expect(
+        () => requireOfflineReport(complete()..[flag] = false),
+        throwsStateError,
+      );
+    }
   });
 
   test('requires every screen and accepts the complete offline run', () {

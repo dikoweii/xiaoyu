@@ -39,6 +39,7 @@ abstract interface class RtcSession {
   Stream<RtcUpdate> get events;
   Future<void> join(Json info);
   Future<void> mute(bool muted);
+  Future<void> mutePlayback(bool muted);
   Future<void> route(String route);
   Future<void> dispose();
 }

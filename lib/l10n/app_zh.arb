@@ -49,25 +49,23 @@
   "saveDraft": "保存草稿",
   "saveCharacter": "保存数字人",
   "callCostTitle": "开始一场实时陪伴",
-  "callCostBody": "本次使用你的 Vidu 账号，控制链路准备就绪后开始计费。默认最多 10 分钟，静音仍可能计费；进入后台或锁屏会结束通话。首次通话需要麦克风权限，不开启摄像头。",
+  "callCostBody": "本次使用你的账号，控制链路准备就绪后开始计费。默认最多 10 分钟，静音仍可能计费；进入后台或锁屏会结束通话。首次通话需要麦克风权限，不开启摄像头。",
   "endCall": "结束通话",
   "returnToCall": "返回当前通话",
   "connectingHint": "正在等待真实数字人音视频。你可以随时结束。",
   "mute": "静音",
   "unmute": "取消静音",
+  "mutePlayback": "关闭声音",
+  "unmutePlayback": "开启声音",
   "audioRoute": "音频输出",
   "speaker": "扬声器",
   "earpiece": "听筒",
   "systemRoute": "系统默认 / 已连接耳机",
   "interrupt": "打断回复",
   "chat": "聊天",
-  "actions": "动作",
   "chatHint": "输入你想说的话…",
-  "actionHint": "描述希望她做的动作…",
   "send": "发送",
-  "sent": "指令已发送",
   "voiceAccepted": "声音设置已接受，当前回复结束后生效。",
-  "emptyTranscript": "真实转写将在这里显示",
   "noHistory": "还没有通话记录",
   "usagePending": "用量待更新",
   "checkStatus": "核对平台状态",
@@ -78,7 +76,6 @@
   "privacyBody": "API Key 仅用于 Vidu 鉴权，不写入聊天数据库。角色与聊天原文保存在本机；实时音频、角色设定及启用的知识与记忆会发送到 Vidu。小遇不录制整场音视频。",
   "showKey": "显示或隐藏 API Key",
   "about": "小遇 · 接入验证版",
-  "actionsHint": "输入动作描述。效果取决于当前形象，不保证精确姿态。",
   "status": "{phase, select, idle{待开始} creating{正在连接} initializing{正在准备} joining{正在接入音视频} connected{通话中} ending{正在结束} ended{已结束} pending{结束待核对} failed{连接失败} draft{草稿} created{已创建} processing{形象处理中} success{形象已就绪} other{待处理}}",
   "@status": {
     "placeholders": {
@@ -98,7 +95,7 @@
       }
     }
   },
-  "error": "{code, select, missingKey{请先配置 API Key。} unauthorized{API Key 无效，请检查。} forbidden{当前账号无权访问该资源。} channelUnavailable{声网通道不可用，请向 Vidu 确认开通状态。} insufficientCredit{Vidu 账号额度不足。} characterIncomplete{请补全名称、人设、就绪形象与兼容声音。} wrongCredential{此角色属于另一套凭证配置，请恢复原配置。} microphoneDenied{需要麦克风权限才能通话，请在系统设置中允许。} pendingCall{有尚未确认结束的通话，请先在历史中核对。} prepareTimeout{连接准备超时，正在结束并核对。} connectionLost{连接已中断，正在结束并核对。} notConnected{请先接通实时通话。} actionCooldown{请稍等两秒再发送动作。} imageInvalid{请选择支持的图片格式，且大小小于 20 MB。} inputInvalid{请检查输入内容及长度。} voicePending{有声音更新正在等待确认，请稍候。} voiceUnknown{声音更新结果未知，请在下次通话再调整。} voiceChangeFailed{声音更新失败，当前声音保持原设置。} commandRejected{平台未接受该指令。} notFound{资源不存在或暂不可查询。} protocol{平台响应格式暂不兼容，请保留待核对状态。} other{操作未完成，请检查网络或稍后重试。}}",
+  "error": "{code, select, missingKey{请先配置 API Key。} unauthorized{API Key 无效，请检查。} forbidden{当前账号无权访问该资源。} channelUnavailable{声网通道不可用，请向 Vidu 确认开通状态。} insufficientCredit{Vidu 账号额度不足。} characterIncomplete{请补全名称、人设、就绪形象与兼容声音。} wrongCredential{此角色属于另一套凭证配置，请恢复原配置。} microphoneDenied{需要麦克风权限才能通话，请在系统设置中允许。} pendingCall{有尚未确认结束的通话，请先在历史中核对。} prepareTimeout{连接准备超时，正在结束并核对。} connectionLost{连接已中断，正在结束并核对。} notConnected{请先接通实时通话。} actionCooldown{请稍等两秒再发送动作。} imageInvalid{请选择支持的图片格式，且大小小于 20 MB。} inputInvalid{请检查输入内容及长度。} voicePending{有声音更新正在等待确认，请稍候。} voiceUnknown{声音更新结果未知，请在下次通话再调整。} voiceChangeFailed{声音更新失败，当前声音保持原设置。} commandRejected{平台未接受该指令。} notFound{资源不存在或暂不可查询。} protocol{平台响应格式暂不兼容，请保留待核对状态。} characterFieldsIncomplete{请填写名称、人设并选择声音，检查文字是否超过长度限制。} avatarProcessing{云端形象正在处理中，资料已保存。请稍后再次点击提交检查进度。} avatarFailed{云端形象处理失败。请在高级设置中重新创建形象，或更换照片。} other{操作未完成，请检查网络或稍后重试。}}",
   "@error": {
     "placeholders": {
       "code": {
@@ -146,5 +143,35 @@
     }
   },
   "showPassword": "显示密码",
-  "hidePassword": "隐藏密码"
+  "hidePassword": "隐藏密码",
+  "keyboardChat": "文字聊天",
+  "quickActions": "快捷动作",
+  "emptyTranscript": "暂无对话记录",
+  "quickActionName": "{id, select, watermelon{吃西瓜} durian{吃榴莲} lollipop{吃棒棒糖} iceCream{吃雪糕} apple{吃苹果} burger{吃汉堡} fries{吃薯条} dumpling{吃饺子} crayfish{吃小龙虾} cola{喝可乐} seeds{嗑瓜子} noodles{吃泡面} grapes{吃葡萄} milkTea{喝奶茶} pigtails{双马尾} tuckHair{别发} highPonytail{高马尾} hairBun{丸子头} hairFlip{甩头发} bowClip{蝴蝶结发夹} braid{编辫子} cap{反戴帽子} twirlHair{绕头发} sunglasses{戴墨镜} lipstick{涂口红} heart{比心} microphone{唱歌} winkPeace{眨眼比耶} readComments{看弹幕} dance{轻轻跳舞} tiltSmile{歪头笑} hug{抱抱} salute{俏皮敬礼} wave{挥手} pretendCry{假哭擦泪} nervous{咬指甲} twoHandCheeks{双手捧脸} cuteSequence{撒娇八连} pipa{拿出琵琶} phoenixCrown{戴凤冠} shyPeace{害羞比耶} floralCoat{穿花棉袄} playfulFace{挤眉弄眼} pokeCheek{戳脸颊} shyFingers{对手指} touchEar{摸耳垂} thumbsUp{点赞} thankYou{合十道谢} relief{擦汗松气} massageShoulder{揉肩颈} surrender{卖萌投降} drawHeart{画心} pokeScreen{戳屏幕} adjustCollar{整理衣领} realization{恍然大悟} think{思考} quiet{嘘} helpless{无奈耸肩} leanBack{后靠放松} countFingers{数手指} turnAround{转一圈} stretch{伸懒腰} cheer{加油} clap{鼓掌} follow{点关注} supportSign{举牌应援} snap{响指} blowKiss{飞吻} wink{眨眼} giggle{捂嘴偷笑} tongue{吐舌卖萌} pretendAngry{假装生气} fingerGun{爱心发射} kissCamera{亲镜头} pinkyPromise{拉钩} daydream{托腮发呆} sleepy{揉眼犯困} funnyFace{鬼脸} handFrame{手框} devilHorns{恶魔角} overheadCircle{头顶圈圆} airplane{飞机手} claspFists{握拳期待} elegant{大小姐} oneHip{单手叉腰} bothHips{双手叉腰} shadeEyes{挡光} palmsUp{摊手} foldHands{叠手} handOnHeart{抚心} oneHandCheek{单手捧脸} chinRest{托腮思考} lookDown{低头} leanForward{前倾倾听} flex{秀肌肉} doraemon{哆啦A梦} ultraman{奥特曼} pikachu{皮卡丘} flowers{一束花} cake{小蛋糕} selfie{手机自拍} cat{抱猫} dog{抱小狗} smile{微笑} nod{点头} peace{比耶} other{}}",
+  "@quickActionName": {
+    "description": "Built-in action button label. IDs follow QuickAction in presentation/quick_actions.dart.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "quickActionPrompt": "{id, select, watermelon{双手捧起一块西瓜，送到嘴边轻咬一口，露出满足的微笑。} durian{拿起一小块榴莲果肉，靠近闻一下，再小口品尝。} lollipop{举起一根棒棒糖，放到嘴边轻舔一下，俏皮地看向镜头。} iceCream{拿着一支雪糕送到嘴边，小口品尝，表情轻松愉快。} apple{单手拿起苹果，在嘴边轻咬一口，随后自然咀嚼。} burger{双手拿起汉堡，送到嘴边咬一小口，开心地看向镜头。} fries{拿起一根薯条放入口中，轻轻咀嚼并微笑。} dumpling{用筷子夹起一个饺子，轻吹一下，再送到嘴边品尝。} crayfish{拿起一只小龙虾，做出剥壳和品尝虾肉的动作。} cola{拿起一罐可乐，送到嘴边喝一口，再轻轻放下。} seeds{拿起一颗瓜子送到嘴边，做出轻嗑瓜子的动作，再放下瓜子壳。} noodles{用筷子夹起少量泡面，轻吹一下，再送到嘴边品尝。} grapes{从一串葡萄上摘下一颗，送到嘴边吃下，面带微笑。} milkTea{双手捧着奶茶杯，低头用吸管喝一口，再抬头微笑。} pigtails{抬起双手，将头发分向两侧，做出扎成双马尾的动作。} tuckHair{抬起一只手，将脸颊旁的碎发轻轻别到耳后，微微一笑。} highPonytail{双手拢起头发，在脑后较高的位置做出扎马尾的动作。} hairBun{双手将头发拢起并盘在头顶，做出整理丸子头的动作。} hairFlip{轻轻转头，让头发自然摆动，再看向镜头。} bowClip{拿起一枚蝴蝶结发夹，轻轻夹在头发侧边，再用手整理。} braid{将一侧头发分成几股，低头做出轻轻编辫子的动作。} cap{拿起一顶棒球帽，将帽檐朝后戴上，再轻轻调整位置。} twirlHair{用手指轻绕脸旁的一缕头发，略微歪头，表情自然。} sunglasses{拿出一副墨镜，展开镜腿戴好，再轻扶镜框看向镜头。} lipstick{拿起口红，沿嘴唇轻轻涂抹，随后抿嘴整理。} heart{双手在胸前比出爱心，面带微笑，注视镜头。} microphone{拿起麦克风靠近嘴边，做出投入演唱的表情和轻微律动。} winkPeace{身体稍微靠近镜头，单眼轻眨，同时在脸旁比出剪刀手。} readComments{身体稍微前倾，认真看向镜头下方，做出阅读弹幕的神情。} dance{肩膀和上身随着轻快节奏小幅摆动，双手自然配合舞动。} tiltSmile{头部轻轻偏向一侧，注视镜头，露出自然的微笑。} hug{面向镜头张开双臂，身体微微前倾，露出期待拥抱的表情。} salute{一只手抬到额头旁做出敬礼姿势，配合俏皮的微笑。} wave{抬起一只手，掌心朝向镜头，轻轻左右挥动打招呼。} pretendCry{露出夸张委屈的表情，用手轻擦眼角，表现出假装哭泣的样子。} nervous{把手指轻靠近嘴边，做出咬指甲的姿势，眉头微皱，略显紧张。} twoHandCheeks{双手轻捧脸颊，身体略微靠近镜头，露出甜美的笑容。} cuteSequence{依次做出歪头、眨眼、抿嘴笑、捧脸、轻耸肩、比心、伸手求抱和挥手八个撒娇小动作。} pipa{将一把琵琶抱在身前，左手扶琴颈，右手轻拨琴弦。} phoenixCrown{双手捧起一顶红色凤冠，轻轻戴在头上，再扶正两侧。} shyPeace{身体靠近镜头，在脸旁比出剪刀手，略微低头，露出害羞的笑容。} floralCoat{拿起一件东北花纹棉袄，做出披上、穿好并整理衣襟的动作。} playfulFace{面向镜头轻挑眉、眨眼并皱鼻子，做出俏皮的鬼脸。} pokeCheek{用食指轻戳自己的脸颊，头部微歪，露出可爱的表情。} shyFingers{双手放在胸前，两根食指指尖轻轻相碰，低头表现害羞。} touchEar{一只手轻摸耳垂，视线短暂移开，再害羞地看向镜头。} thumbsUp{面向镜头举起一只手，竖起大拇指，微笑表示赞同。} thankYou{双掌在胸前合十，轻轻点头，露出真诚感谢的表情。} relief{抬起手背轻擦额头，随后放松肩膀，做出松了一口气的神情。} massageShoulder{用一只手轻轻揉按另一侧肩颈，稍微侧头，表现放松。} surrender{双手举到肩膀两侧，掌心朝前，配合无辜又俏皮的表情。} drawHeart{伸出食指，在镜头前缓慢描画一个心形，再微笑收手。} pokeScreen{伸出食指靠近镜头，轻轻做出点一下屏幕的动作，俏皮地微笑。} adjustCollar{低头看向衣领，用双手轻轻抚平并整理衣领，随后抬头。} realization{轻轻拍一下额头，眉毛抬起，露出突然想明白的表情。} think{将食指轻放在下巴旁，视线稍微上移，做出认真思考的神情。} quiet{将食指竖在嘴唇前，轻轻抿嘴，示意保持安静。} helpless{双手在身体两侧摊开，轻耸肩膀，露出无奈的表情。} leanBack{身体缓缓向后靠向椅背，肩膀放松，表情舒展。} countFingers{在胸前举起一只手，依次伸出手指，展示从一到五的数字。} turnAround{在画面空间允许时，身体缓慢转一圈，再回到面向镜头的位置。} stretch{双臂向上舒展，上身轻轻伸展，随后自然放下手臂。} cheer{双手轻握拳放在胸前，小幅上下挥动，露出鼓励的笑容。} clap{双手在胸前轻拍几下，微笑点头，表现开心赞赏。} follow{面向镜头，伸出食指指向画面下方，做出邀请点击关注的手势。} supportSign{双手举起一块小应援牌，朝镜头轻轻展示，露出支持鼓励的笑容。} snap{抬起一只手到肩旁，拇指与中指配合，做出一次打响指的动作。} blowKiss{将手指轻贴嘴唇，再向镜头方向伸出手，送出一个飞吻。} wink{身体稍微靠近镜头，轻眨一只眼睛，嘴角上扬。} giggle{一只手轻掩嘴唇，眼睛微弯，肩膀轻轻起伏，表现忍不住偷笑。} tongue{看向镜头，短暂轻吐舌尖，再收回，露出俏皮的表情。} pretendAngry{双手叉腰，身体稍微靠近镜头，再伸出手指轻点镜头方向，做出假装生气的表情。} fingerGun{用拇指和食指比出手枪手势，朝镜头轻点一下，再微笑收手。} kissCamera{身体缓慢靠近镜头，轻轻噘嘴做出亲吻姿势，随后自然退回。} pinkyPromise{将一只手的小拇指朝镜头伸出，轻轻晃动，做出邀请拉钩的姿势。} daydream{单手托住脸颊，视线稍微放空，保持安静放松的神情。} sleepy{略微低头，用手背轻揉眼角，再缓缓抬头，表现困倦。} funnyFace{用一根手指轻拉下眼睑，同时短暂吐舌尖，做出俏皮鬼脸。} handFrame{双手的拇指和食指组成取景框，放在脸前，透过手框看向镜头。} devilHorns{双手举到头顶两侧，各伸出食指，模仿小恶魔的角。} overheadCircle{双臂在头顶上方弯曲，围成一个大圆，面向镜头微笑。} airplane{双臂向身体两侧展开，像飞机机翼一样轻轻倾斜身体。} claspFists{双手在胸前交握，眼睛微亮，露出欣喜期待的表情。} elegant{一只手轻抬到嘴边，另一只手自然放在腰侧，微微抬头，表现优雅俏皮。} oneHip{一只手放在腰侧，另一只手自然垂下，身体略微侧转。} bothHips{双手放在腰侧，手肘自然向外，抬头看向镜头。} shadeEyes{抬起一只手横放在额前，做出遮挡阳光、向前望的姿势。} palmsUp{双手在胸前向两侧摊开，掌心朝上，表情轻松。} foldHands{双手自然交叠放在膝前，上身端正，神情安静。} handOnHeart{将一只手轻放在胸口，注视镜头，露出真诚温柔的表情。} oneHandCheek{用一只手轻托一侧脸颊，头部稍微向手心倾斜。} chinRest{用一只手轻托下巴，视线朝向镜头，做出思考的神情。} lookDown{头部缓缓低下，视线自然向下，再停留片刻。} leanForward{上身轻轻向前倾，靠近镜头，表现认真倾听。} flex{弯曲一只手臂并轻握拳，抬起上臂，做出展示肌肉的姿势。} doraemon{双手将一个哆啦A梦玩偶举到胸前，朝镜头展示，再轻轻抱住。} ultraman{拿起一个奥特曼玩偶，放在身前向镜头展示，轻轻摆动。} pikachu{双手捧起一个皮卡丘玩偶，靠近脸旁，微笑着向镜头展示。} flowers{从身侧拿出一束花，双手捧在胸前，轻轻递向镜头。} cake{双手托起一个小蛋糕，举到胸前，微笑着展示。} selfie{拿出手机，将屏幕朝向自己，略微抬高手臂，摆出自拍的姿势。} cat{双手将一只小猫轻抱在胸前，一只手托住身体，另一只手轻抚背部。} dog{双手将一只小狗轻抱在身前，微笑看向镜头，再轻轻抚摸。} smile{看向我，自然地微笑。} nod{面带微笑，轻轻点头。} peace{在脸旁比出剪刀手，面向镜头微笑。} other{}}",
+  "@quickActionPrompt": {
+    "description": "Built-in action full instruction sent through text_action. IDs follow QuickAction in presentation/quick_actions.dart.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "quickActionCategory": "{id, select, common{常用} food{吃喝} appearance{发型装扮} expressions{表情互动} gestures{手势姿态} props{道具} other{}}",
+  "@quickActionCategory": {
+    "description": "Horizontal quick action category labels.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  }
 }

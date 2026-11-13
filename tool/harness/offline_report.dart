@@ -8,6 +8,8 @@ Map<String, dynamic> requireOfflineReport(Map<String, dynamic>? data) {
     'sqliteReopened',
     'hangupReturnedHome',
     'backgroundEnded',
+    'screenAwakeDuringCall',
+    'screenSleepRestored',
   ];
   if (data == null || requiredFlags.any((key) => data[key] != true)) {
     throw StateError('Offline test did not produce all completion evidence.');

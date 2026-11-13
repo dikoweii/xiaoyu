@@ -18,6 +18,32 @@ class CharacterRepository {
     '12' || 'failed' => 'failed',
     _ => 'draft',
   };
+
+  /// Explicit submission prepares an account asset; it never creates a live.
+  Future<Character> submit(Character c) async {
+    validateCharacterDetails(c);
+    final credential = _credential;
+    if (c.avatarId.isNotEmpty && c.credentialId != credential.id) {
+      throw const AppFailure('wrongCredential');
+    }
+    // An earlier attempt may have persisted an ID before the UI received it.
+    final saved = await local.character(c.id);
+    if (c.avatarId.isEmpty && saved != null && saved.avatarId.isNotEmpty) {
+      if (saved.credentialId != credential.id) {
+        throw const AppFailure('wrongCredential');
+      }
+      c = c.copyWith(
+        avatarId: saved.avatarId,
+        assetStatus: saved.assetStatus,
+        credentialId: saved.credentialId,
+        imagePath: saved.imagePath,
+      );
+    }
+    if (c.avatarId.isEmpty) return upload(c);
+    await local.saveCharacter(c);
+    return c.assetStatus == 'success' ? c : refresh(c);
+  }
+
   Future<Character> upload(Character c) async {
     final credential = _credential;
     await local.saveCharacter(c);

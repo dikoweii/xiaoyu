@@ -176,6 +176,13 @@ class AgoraRtcSession implements RtcSession {
   }
 
   @override
+  Future<void> mutePlayback(bool muted) async {
+    if (!_initialized || _disposed) throw const AppFailure('notConnected');
+    // Keep subscriptions and microphone capture intact; only local playout changes.
+    await _engine!.adjustPlaybackSignalVolume(muted ? 0 : 100);
+  }
+
+  @override
   Future<void> route(String route) async {
     if (!_initialized || _disposed) return;
     final value = switch (route) {

@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xiaoyu/ui/core/controls.dart';
@@ -125,7 +125,10 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      final lens = find.byType(LiquidGlassButton);
+      final lens = find.descendant(
+        of: find.byType(AppButton),
+        matching: find.byType(LiquidGlassLens),
+      );
       final label = find.text(
         'A long action that must wrap onto multiple lines',
       );

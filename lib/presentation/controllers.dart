@@ -98,14 +98,14 @@ class ScreenController {
     return character;
   }
 
-  Future<void> saveCharacter(Character value, {bool validate = false}) async {
-    if (validate) buildSession(value, profileId);
-    await _runtime.local.saveCharacter(value);
-  }
+  Future<void> saveCharacter(Character value) =>
+      _runtime.local.saveCharacter(value);
 
   Future<void> deleteCharacter(String id) => _runtime.local.deleteCharacter(id);
   Future<void> deleteCall(String id) => _runtime.local.deleteCall(id);
   Future<Character> upload(Character c) => _runtime.characters.upload(c);
+  Future<Character> submitCharacter(Character c) =>
+      _runtime.characters.submit(c);
   Future<Character> refresh(Character c) => _runtime.characters.refresh(c);
   Future<List<Json>> existing() => _runtime.characters.existing();
   String assetStatus(Object? raw) => _runtime.characters.assetStatus(raw);

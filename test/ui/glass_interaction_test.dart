@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xiaoyu/domain/models.dart';
@@ -28,6 +31,124 @@ Future<void> reach(WidgetTester tester, String key) async {
 }
 
 void main() {
+  testWidgets(
+    'sound button toggles playback directly and header shares one glass',
+    (tester) async {
+      final rtc = fake.FakeRtc();
+      final call = CallCoordinator(
+        api: fake.FakeApi(),
+        store: fake.FakeStore(),
+        signalFactory: (_, _) => fake.FakeSignal(),
+        rtcFactory: () => rtc,
+        microphonePermission: () async => true,
+        queryDelays: [],
+      );
+      final fixture = Fixture(callsOverride: call);
+      await fixture.open();
+      addTearDown(fixture.close);
+      await call.start(fake.character, fake.credential, 'offline');
+      await fixture.pump(tester, route: '/call');
+      final capsule = find.byKey(const Key('call-status'));
+      expect(tester.widget(capsule), isA<LiquidGlassLens>());
+      expect(
+        find.descendant(of: capsule, matching: find.text(fake.character.name)),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: capsule,
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is Text &&
+                RegExp(r'^\d+:\d{2}$').hasMatch(widget.data ?? ''),
+          ),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: capsule, matching: find.textContaining('通话中')),
+        findsNothing,
+      );
+      expect(find.byKey(const Key('call-menu')), findsNothing);
+      await tester.tap(find.byKey(const Key('toggle-playback')));
+      await tester.pumpAndSettle();
+      expect(rtc.playbackMuted, isTrue);
+      expect(rtc.muted, isFalse);
+      expect(find.byType(BottomSheet), findsNothing);
+      expect(
+        tester
+            .widget<AppIconButton>(find.byKey(const Key('toggle-playback')))
+            .label,
+        '开启声音',
+      );
+      await tester.tap(find.byKey(const Key('toggle-microphone')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('toggle-playback')));
+      await tester.pumpAndSettle();
+      expect(rtc.playbackMuted, isFalse);
+      expect(rtc.muted, isTrue);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  for (final reduced in [false, true]) {
+    testWidgets('connecting particles animate unless reduced motion=$reduced', (
+      tester,
+    ) async {
+      final fixture = Fixture(phase: CallPhase.creating);
+      await fixture.open();
+      addTearDown(fixture.close);
+      await tester.pumpWidget(
+        fixture.widget(
+          page: ProviderScope(
+            overrides: [presenceAnimationProvider.overrideWithValue(true)],
+            child: MediaQuery(
+              data: MediaQueryData(
+                size: const Size(800, 600),
+                disableAnimations: reduced,
+              ),
+              child: const CallScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+      final boundary = tester.renderObject<RenderRepaintBoundary>(
+        find.byKey(const Key('connecting-particles')),
+      );
+      Future<List<int>> pixels() async {
+        final image = await boundary.toImage();
+        final bytes = await image.toByteData(
+          format: ui.ImageByteFormat.rawRgba,
+        );
+        image.dispose();
+        return bytes!.buffer.asUint8List().toList();
+      }
+
+      final before = await tester.runAsync(pixels);
+      await tester.pump(const Duration(milliseconds: 700));
+      final after = await tester.runAsync(pixels);
+      if (reduced) {
+        expect(after, before);
+      } else {
+        expect(after, isNot(before));
+      }
+      expect(
+        tester.getSize(find.byKey(const Key('end-call'))),
+        const Size(56, 56),
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('end-call')),
+          matching: find.byType(Text),
+        ),
+        findsNothing,
+      );
+      expect(find.text('取消连接'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
   for (final source in ['/', '/settings', 'root']) {
     testWidgets('end returns to $source while native release is pending', (
       tester,
@@ -171,7 +292,8 @@ void main() {
       await tester.pump();
       await tester.pump();
       expect(find.byKey(const Key('call-loading')), findsNothing);
-      expect(find.byKey(const Key('chat-input')), findsOneWidget);
+      expect(find.byKey(const Key('chat-input')), findsNothing);
+      expect(find.byKey(const Key('open-call-composer')), findsOneWidget);
       expect(
         tester.state(find.byType(RtcVideoSurface)),
         same(surface),
@@ -207,8 +329,8 @@ void main() {
         ),
         'Saved summary',
       );
-      await reach(tester, 'advanced-close');
-      await tester.tap(find.byKey(const Key('advanced-close')));
+      expect(find.byKey(const Key('advanced-close')), findsNothing);
+      await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       await reach(tester, 'choose-voice');
       await tester.tap(find.byKey(const Key('choose-voice')));

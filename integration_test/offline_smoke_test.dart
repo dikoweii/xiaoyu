@@ -3,14 +3,17 @@ import 'dart:ui' as ui;
 import 'dart:async';
 
 import 'package:drift/native.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:xiaoyu/app/app.dart';
 import 'package:xiaoyu/app/bootstrap.dart';
 import 'package:xiaoyu/ui/core/design.dart';
+import 'package:xiaoyu/ui/account_editor.dart';
+import 'package:xiaoyu/ui/call_history.dart' show presenceAnimationProvider;
 import 'package:xiaoyu/app/runtime.dart';
 import 'package:xiaoyu/application/call_coordinator.dart';
 import 'package:xiaoyu/data/local/database.dart';
@@ -124,9 +127,11 @@ void main() {
         profile,
         callsOverride: coordinator,
       );
+      addTearDown(WakelockPlus.disable);
       final container = ProviderContainer(
         overrides: [
           runtimeProvider.overrideWithValue(app),
+          presenceAnimationProvider.overrideWithValue(false),
           officialCatalogProvider.overrideWith(
             (ref) async => [
               for (var i = 0; i < 4; i++)
@@ -169,7 +174,24 @@ void main() {
       expect(find.byKey(const Key('launch-artwork')), findsNothing);
       final qualities = <String, String>{};
       Future<void> capture(String name) async {
-        await tester.pumpAndSettle();
+        // Connecting deliberately keeps painting. Waiting for it to settle
+        // would run until the real preparation deadline, ending the test call.
+        if (coordinator.snapshot.active && !coordinator.snapshot.interactive) {
+          await tester.pump();
+          for (
+            var frame = 0;
+            frame < 20 &&
+                find.byKey(const Key('call-loading')).evaluate().isEmpty;
+            frame++
+          ) {
+            await tester.pump(const Duration(milliseconds: 100));
+          }
+          expect(find.byKey(const Key('call-loading')), findsOneWidget);
+          // Advance the route transition after its first laid out frame.
+          await tester.pump(const Duration(milliseconds: 500));
+        } else {
+          await tester.pumpAndSettle();
+        }
         await tester.pump(const Duration(milliseconds: 500));
         qualities[name] = ui.ImageFilter.isShaderFilterSupported
             ? 'impeller-live-backdrop'
@@ -297,27 +319,73 @@ void main() {
       await capture('editor-scrolled');
       await tester.tap(find.byKey(const Key('choose-voice')));
       await capture('voices');
-      await tester.tap(find.byKey(const Key('voice-close')));
+      expect(find.byKey(const Key('voice-close')), findsNothing);
+      Navigator.of(tester.element(find.byType(VoicePicker))).pop();
       await tester.pumpAndSettle();
-      coordinator.snapshot = CallSnapshot(
-        phase: CallPhase.creating,
-        character: character,
-      );
-      container.read(routerProvider).go('/call');
-      await capture('connecting');
-      coordinator.snapshot = const CallSnapshot();
       await coordinator.start(character, fake.credential, profile);
       expect(coordinator.snapshot.phase, CallPhase.joining);
+      container.read(routerProvider).go('/call');
+      await capture('connecting');
+      expect(await WakelockPlus.enabled, isTrue);
       rtc.controller.add(
         const RtcUpdate(video: RemoteVideo('offline-room', 7)),
       );
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pump(const Duration(milliseconds: 100));
       expect(find.byKey(const Key('call-loading')), findsOneWidget);
       expect(find.byType(RtcVideoSurface), findsOneWidget);
       final videoState = tester.state(find.byType(RtcVideoSurface));
       rtc.controller.add(const RtcUpdate(firstFrame: true));
       await capture('call');
+      expect(await WakelockPlus.enabled, isTrue);
       expect(find.byKey(const Key('call-loading')), findsNothing);
+      expect(tester.state(find.byType(RtcVideoSurface)), same(videoState));
+      expect(find.byKey(const Key('call-menu')), findsNothing);
+      expect(find.byKey(const Key('call-live-indicator')), findsOneWidget);
+      expect(find.byType(TextField), findsNothing);
+      await tester.tap(find.byKey(const Key('open-call-composer')));
+      await capture('call-composer');
+      await tester.enterText(
+        find.byKey(const Key('chat-input')),
+        'Offline hello',
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('chat-send')));
+      await tester.pumpAndSettle();
+      expect(signal.sent.last, 102);
+      await tester.tap(find.byKey(const Key('quick-action-heart')));
+      await tester.pumpAndSettle();
+      expect(signal.sent.last, 101);
+      final sentBeforeCategory = signal.sent.length;
+      await tester.ensureVisible(find.byKey(const Key('quick-category-food')));
+      await tester.tap(find.byKey(const Key('quick-category-food')));
+      await capture('call-food');
+      expect(
+        find.byKey(const Key('quick-action-watermelon')).hitTestable(),
+        findsOneWidget,
+      );
+      expect(signal.sent.length, sentBeforeCategory);
+      await tester.ensureVisible(
+        find.byKey(const Key('quick-category-common')),
+      );
+      await tester.tap(find.byKey(const Key('quick-category-common')));
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(const Key('quick-action-heart')).hitTestable(),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(const Key('close-call-composer')));
+      await tester.pumpAndSettle();
+      expect(find.byType(TextField), findsNothing);
+      expect(tester.state(find.byType(RtcVideoSurface)), same(videoState));
+      await tester.tap(find.byKey(const Key('toggle-playback')));
+      await tester.pumpAndSettle();
+      expect(rtc.playbackMuted, isTrue);
+      expect(rtc.muted, isFalse);
+      expect(find.byType(BottomSheet), findsNothing);
+      await tester.tap(find.byKey(const Key('toggle-playback')));
+      await tester.pumpAndSettle();
+      expect(rtc.playbackMuted, isFalse);
       expect(tester.state(find.byType(RtcVideoSurface)), same(videoState));
       container.read(routerProvider).go('/');
       await tester.pumpAndSettle();
@@ -332,6 +400,8 @@ void main() {
       expect(find.byKey(const Key('character-image-input')), findsNothing);
       await coordinator.end();
       expect(coordinator.snapshot.phase, CallPhase.ended);
+      await tester.pumpAndSettle();
+      expect(await WakelockPlus.enabled, isFalse);
       await coordinator.start(character, fake.credential, profile);
       final backgroundCallId = coordinator.snapshot.callId;
       expect(
@@ -356,6 +426,7 @@ void main() {
       binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       await tester.pumpAndSettle();
       expect(coordinator.snapshot.phase, CallPhase.ended);
+      expect(await WakelockPlus.enabled, isFalse);
       expect(
         (await local.watchCalls().first)
             .firstWhere((row) => row.id == backgroundCallId)
@@ -377,6 +448,8 @@ void main() {
             ? 'interactive-edge-swipe'
             : 'system-back',
         'backgroundEnded': true,
+        'screenAwakeDuringCall': true,
+        'screenSleepRestored': true,
         'platform': Platform.operatingSystem,
         'os': Platform.operatingSystemVersion,
       };

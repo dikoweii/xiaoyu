@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../application/call_coordinator.dart';
 import '../data/character_repository.dart';
@@ -68,6 +69,10 @@ class AppRuntime {
 final runtimeProvider = Provider<AppRuntime>(
   (ref) => throw UnimplementedError('Bootstrap required'),
 );
+// Composition boundary: tests replace the native screen flag, not call logic.
+final screenAwakeProvider = Provider<Future<void> Function(bool)>((ref) {
+  return (enabled) => WakelockPlus.toggle(enable: enabled);
+});
 final charactersProvider = StreamProvider(
   (ref) => ref.watch(runtimeProvider).local.watchCharacters(),
 );

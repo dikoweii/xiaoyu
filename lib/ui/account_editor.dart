@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -326,13 +326,26 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                     onPressed: busy
                         ? null
                         : () => _work(() async {
-                            await controller.saveCharacter(
+                            final updated = await controller.submitCharacter(
                               draft,
-                              validate: true,
                             );
                             if (context.mounted) {
-                              setState(() => dirty = false);
-                              context.pop();
+                              setState(() {
+                                character = updated;
+                                dirty = false;
+                              });
+                              if (updated.ready) {
+                                context.pop();
+                              } else {
+                                notice(
+                                  context,
+                                  s.error(
+                                    updated.assetStatus == 'failed'
+                                        ? 'avatarFailed'
+                                        : 'avatarProcessing',
+                                  ),
+                                );
+                              }
                             }
                           }),
                     child: Text(s.submit),
@@ -402,23 +415,9 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      s.advancedSettings,
-                      style: Theme.of(panelContext).textTheme.titleLarge,
-                    ),
-                  ),
-                  AppIconButton(
-                    key: const Key('advanced-close'),
-                    icon: const Icon(Icons.close),
-                    label: s.close,
-                    onPressed: busy
-                        ? null
-                        : () => Navigator.of(panelContext).pop(),
-                  ),
-                ],
+              Text(
+                s.advancedSettings,
+                style: Theme.of(panelContext).textTheme.titleLarge,
               ),
               gap(16),
               AppField(
@@ -553,24 +552,9 @@ class _VoicePickerState extends State<VoicePicker> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                s.voice,
-                style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            AppIconButton(
-              key: const Key('voice-close'),
-              icon: const Icon(Icons.close, size: 18),
-              label: s.close,
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
+        Text(
+          s.voice,
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
         ),
         gap(8),
         Wrap(
@@ -644,9 +628,10 @@ class _VoicePickerState extends State<VoicePicker> {
                   const SizedBox(width: 8),
                   SizedBox(
                     width: MediaQuery.textScalerOf(context).scale(1) > 1.5
-                        ? 100
+                        ? 140
                         : 80,
                     child: AppButton(
+                      key: Key('voice-select-${entry.$1}'),
                       accent: entry.$1 == widget.selected,
                       onPressed: () => Navigator.of(context).pop(entry.$1),
                       child: Text(

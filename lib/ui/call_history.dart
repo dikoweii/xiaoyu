@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart' show CupertinoIcons;
+import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +11,7 @@ import 'package:intl/intl.dart';
 import '../domain/models.dart';
 import '../domain/call_ports.dart';
 import '../presentation/controllers.dart';
-import 'account_editor.dart';
+import 'call_composer.dart';
 import 'core/design.dart';
 import 'core/widgets.dart';
 import 'integrations/rtc_video_surface.dart';
@@ -27,7 +27,7 @@ class CallScreen extends ConsumerStatefulWidget {
 class _CallScreenState extends ConsumerState<CallScreen> {
   Timer? timer;
   final input = TextEditingController();
-  bool actionMode = false, sending = false, leaving = false;
+  bool composerOpen = false, leaving = false;
   @override
   void initState() {
     super.initState();
@@ -70,66 +70,83 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   minHeight: math.max(0, box.maxHeight - 48),
                 ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(
-                      width: 256,
-                      height: 256,
-                      child: Stack(
-                        alignment: Alignment.center,
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: math.max(0, box.maxHeight * .14 - 24),
+                      ),
+                      child: Column(
                         children: [
-                          const Positioned.fill(
-                            child: CustomPaint(painter: _PresenceDots()),
+                          _ConnectingPresence(
+                            character: call.character,
+                            animate: ref.watch(presenceAnimationProvider),
                           ),
-                          ClipOval(
-                            child: SizedBox(
-                              width: 96,
-                              height: 96,
-                              child: call.character == null
-                                  ? const Icon(Icons.person_outline)
-                                  : Portrait(call.character!, height: 96),
+                          gap(24),
+                          Text(
+                            call.character?.name ?? s.appName,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          gap(14),
+                          Text(
+                            s.status(call.phase.name),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: XiaoyuDesign.lavender,
+                            ),
+                          ),
+                          gap(10),
+                          Text(
+                            s.connectPreparing,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: XiaoyuDesign.muted,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    gap(24),
-                    Text(
-                      call.character?.name ?? s.appName,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    gap(14),
-                    Text(
-                      s.status(call.phase.name),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: XiaoyuDesign.lavender,
-                      ),
-                    ),
-                    gap(10),
-                    Text(
-                      s.connectPreparing,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: XiaoyuDesign.muted,
-                      ),
-                    ),
-                    gap(56),
-                    SizedBox(
-                      width: 220,
-                      child: AppButton(
-                        key: const Key('end-call'),
-                        primary: true,
-                        icon: const Icon(Icons.close, color: Color(0xFFFF453A)),
-                        onPressed: () =>
-                            unawaited(guarded(context, _endAndLeave)),
-                        child: Text(s.cancelConnection),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 48, bottom: 16),
+                      child: Column(
+                        children: [
+                          SizedBox.square(
+                            dimension: 56,
+                            child: Semantics(
+                              key: const Key('end-call'),
+                              label: s.cancelConnection,
+                              button: true,
+                              excludeSemantics: true,
+                              onTap: () =>
+                                  unawaited(guarded(context, _endAndLeave)),
+                              child: IconButton.filled(
+                                tooltip: s.cancelConnection,
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: const Color(0xFFFF3B30),
+                                  shape: const CircleBorder(),
+                                ),
+                                icon: const Icon(Icons.close, size: 24),
+                                onPressed: () =>
+                                    unawaited(guarded(context, _endAndLeave)),
+                              ),
+                            ),
+                          ),
+                          gap(10),
+                          Text(
+                            s.cancelConnection,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: XiaoyuDesign.muted,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -162,40 +179,55 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: AppSurface(
-                            radius: 99,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 10,
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: LiquidGlassLens(
+                        key: const Key('call-status'),
+                        style:
+                            XiaoyuDesign.glass(
+                              context,
+                              lite: platformBackdrop,
+                            ).copyWith(
+                              blur: 10,
+                              shape: const LiquidGlassShape(cornerRadius: 99),
                             ),
-                            child: Text(
-                              '${call.character?.name ?? s.appName} · ${s.status(call.phase.name)}',
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        AppSurface(
-                          radius: 99,
+                        child: Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 14,
                             vertical: 10,
                           ),
-                          child: Text(
-                            '${elapsed ~/ 60}:${(elapsed % 60).toString().padLeft(2, '0')}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontFeatures: [FontFeature.tabularFigures()],
-                            ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (call.interactive) ...[
+                                _CallPresence(
+                                  animate: ref.watch(presenceAnimationProvider),
+                                ),
+                                const SizedBox(width: 8),
+                              ],
+                              Flexible(
+                                child: Text(
+                                  call.character?.name ?? s.appName,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                '${elapsed ~/ 60}:${(elapsed % 60).toString().padLeft(2, '0')}',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0x99FFFFFF),
+                                  fontFeatures: [FontFeature.tabularFigures()],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        _more(call),
-                      ],
+                      ),
                     ),
-                    SizedBox(height: math.max(60, box.maxHeight * .40)),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -203,68 +235,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                           AppSurface(child: Text(s.error(call.error!))),
                         if (call.phase == CallPhase.pending)
                           AppSurface(child: Text(s.endPending)),
-                        if (call.callId != null)
-                          ref
-                              .watch(messagesProvider(call.callId!))
-                              .when(
-                                data: (messages) => AppSurface(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 18,
-                                    vertical: 12,
-                                  ),
-                                  child: Text(
-                                    messages.lastOrNull?.content ??
-                                        s.emptyTranscript,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      height: 1.5,
-                                    ),
-                                  ),
-                                ),
-                                loading: () =>
-                                    const Center(child: AppLoading()),
-                                error: (_, _) => Text(s.error('storage')),
-                              ),
-                        gap(16),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                key: const Key('chat-input'),
-                                controller: input,
-                                enabled: call.interactive && !sending,
-                                maxLength: actionMode ? 200 : 1000,
-                                minLines: 1,
-                                maxLines: 3,
-                                style: const TextStyle(fontSize: 13),
-                                decoration: InputDecoration(
-                                  hintText: actionMode
-                                      ? s.actionHint
-                                      : s.chatHint,
-                                  counterText: '',
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            AppIconButton(
-                              key: const Key('chat-send'),
-                              lite: platformBackdrop,
-
-                              icon: const Icon(Icons.arrow_upward),
-                              label: s.send,
-                              onPressed: call.interactive && !sending
-                                  ? () => unawaited(_send())
-                                  : null,
-                            ),
-                          ],
-                        ),
-                        gap(16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             _control(
+                              key: const Key('toggle-microphone'),
                               s: call.muted ? s.unmute : s.mute,
                               icon: call.muted
                                   ? CupertinoIcons.mic_slash
@@ -274,21 +249,22 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                   : null,
                             ),
                             _control(
-                              s: s.audioRoute,
-                              icon: CupertinoIcons.speaker_2,
+                              key: const Key('toggle-playback'),
+                              s: call.playbackMuted
+                                  ? s.unmutePlayback
+                                  : s.mutePlayback,
+                              icon: call.playbackMuted
+                                  ? CupertinoIcons.speaker_slash
+                                  : CupertinoIcons.speaker_2,
                               action: call.interactive
-                                  ? () => _route(call.route)
+                                  ? coordinator.togglePlayback
                                   : null,
                             ),
                             _control(
-                              s: s.actions,
-                              icon: actionMode
-                                  ? CupertinoIcons.keyboard
-                                  : CupertinoIcons.bolt,
-                              action: call.interactive
-                                  ? () async =>
-                                        setState(() => actionMode = !actionMode)
-                                  : null,
+                              key: const Key('open-call-composer'),
+                              s: s.keyboardChat,
+                              icon: CupertinoIcons.keyboard,
+                              action: call.interactive ? _openComposer : null,
                             ),
                             _control(
                               key: const Key('end-call'),
@@ -330,68 +306,6 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         : () => unawaited(guarded(context, action)),
   );
 
-  Widget _more(CallSnapshot call) => PopupMenuButton<String>(
-    key: const Key('call-menu'),
-    tooltip: '',
-    icon: Icon(CupertinoIcons.ellipsis, semanticLabel: context.s.more),
-    itemBuilder: (context) => [
-      PopupMenuItem(
-        value: 'interrupt',
-        enabled: call.interactive,
-        child: Text(context.s.interrupt),
-      ),
-      PopupMenuItem(
-        value: 'voice',
-        enabled: call.interactive,
-        child: Text(context.s.voice),
-      ),
-      if (call.callId != null)
-        PopupMenuItem(value: 'transcript', child: Text(context.s.transcript)),
-    ],
-    onSelected: (action) => switch (action) {
-      'interrupt' => unawaited(
-        guarded(context, ref.read(controllerProvider).calls.interrupt),
-      ),
-      'voice' => unawaited(_changeVoice(call)),
-      _ => unawaited(_transcript(call.callId!)),
-    },
-  );
-
-  Future<void> _changeVoice(CallSnapshot call) async {
-    final voice = await chooseVoice(context, call.voice ?? 'Serena');
-    if (voice != null && mounted) {
-      await guarded(
-        context,
-        () => ref.read(controllerProvider).calls.changeVoice(voice),
-      );
-    }
-  }
-
-  Future<void> _transcript(String callId) => sheet<void>(
-    context,
-    Consumer(
-      builder: (context, ref, _) => ref
-          .watch(messagesProvider(callId))
-          .when(
-            data: (messages) => Column(
-              children: [
-                for (final message in messages)
-                  ListTile(
-                    title: Text(message.content),
-                    leading: Icon(
-                      message.speaker == 'user'
-                          ? CupertinoIcons.person
-                          : CupertinoIcons.sparkles,
-                    ),
-                  ),
-              ],
-            ),
-            loading: () => const AppLoading(),
-            error: (_, _) => Text(context.s.error('storage')),
-          ),
-    ),
-  );
-
   Future<void> _endAndLeave() async {
     if (leaving) return;
     leaving = true;
@@ -406,30 +320,93 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     await ending;
   }
 
-  Future<void> _send() async {
-    setState(() => sending = true);
-    await guarded(context, () async {
-      final coordinator = ref.read(controllerProvider).calls;
-      if (actionMode) {
-        coordinator.sendAction(input.text);
-      } else {
-        await coordinator.sendText(input.text);
-      }
-      input.clear();
-      if (mounted && actionMode) notice(context, context.s.sent);
-    });
-    if (mounted) setState(() => sending = false);
-  }
-
-  Future<void> _route(String current) async {
-    final selected = await sheet<String>(context, const RoutePicker());
-    if (selected != null && mounted) {
-      await guarded(
-        context,
-        () => ref.read(controllerProvider).calls.setRoute(selected),
+  Future<void> _openComposer() async {
+    if (composerOpen) return;
+    composerOpen = true;
+    try {
+      await showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        backgroundColor: Colors.transparent,
+        barrierColor: const Color(0x26000000),
+        builder: (_) => CallComposer(input: input),
       );
+    } finally {
+      composerOpen = false;
     }
   }
+}
+
+/// A live indicator that respects the system's reduced motion setting.
+class _CallPresence extends StatefulWidget {
+  const _CallPresence({required this.animate});
+  final bool animate;
+
+  @override
+  State<_CallPresence> createState() => _CallPresenceState();
+}
+
+class _CallPresenceState extends State<_CallPresence>
+    with SingleTickerProviderStateMixin {
+  late final animation = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1400),
+  );
+
+  late final opacity = animation
+      .drive(CurveTween(curve: Curves.easeInOut))
+      .drive(Tween<double>(begin: .4, end: 1));
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateAnimation();
+  }
+
+  @override
+  void didUpdateWidget(covariant _CallPresence oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _updateAnimation();
+  }
+
+  void _updateAnimation() {
+    if (widget.animate && !MediaQuery.disableAnimationsOf(context)) {
+      if (!animation.isAnimating) animation.repeat(reverse: true);
+    } else {
+      animation.stop();
+      animation.value = 1;
+    }
+  }
+
+  @override
+  void dispose() {
+    animation.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: context.s.status('connected'),
+    child: FadeTransition(
+      key: const Key('call-live-indicator'),
+      opacity: Tween<double>(
+        begin: .4,
+        end: 1,
+      ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOut)),
+      child: Container(
+        width: 8,
+        height: 8,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Color(0xFF35D39A),
+          boxShadow: [
+            BoxShadow(color: Color(0x6635D39A), blurRadius: 6, spreadRadius: 1),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 /// One stable video element survives the loading-to-call body transition.
@@ -487,44 +464,134 @@ class _CallGlow extends StatelessWidget {
   );
 }
 
+class _ConnectingPresence extends StatefulWidget {
+  const _ConnectingPresence({required this.character, required this.animate});
+  final Character? character;
+  final bool animate;
+  @override
+  State<_ConnectingPresence> createState() => _ConnectingPresenceState();
+}
+
+class _ConnectingPresenceState extends State<_ConnectingPresence>
+    with SingleTickerProviderStateMixin {
+  late final pulse = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 3),
+  );
+
+  void _syncAnimation() {
+    final enabled =
+        widget.animate &&
+        !MediaQuery.disableAnimationsOf(context) &&
+        TickerMode.valuesOf(context).enabled;
+    if (enabled && !pulse.isAnimating) {
+      pulse.repeat();
+    } else if (!enabled) {
+      pulse.stop();
+      pulse.value = 0;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncAnimation();
+  }
+
+  @override
+  void didUpdateWidget(covariant _ConnectingPresence oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncAnimation();
+  }
+
+  @override
+  void dispose() {
+    pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => RepaintBoundary(
+    key: const Key('connecting-particles'),
+    child: SizedBox.square(
+      dimension: 256,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned.fill(child: CustomPaint(painter: _PresenceDots(pulse))),
+          Container(
+            width: 96,
+            height: 96,
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0x18FFFFFF),
+              border: Border.all(color: const Color(0x40FFFFFF)),
+            ),
+            child: ClipOval(
+              child: widget.character == null
+                  ? const Icon(Icons.person_outline)
+                  : Portrait(widget.character!, height: 88),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 class _PresenceDots extends CustomPainter {
-  const _PresenceDots();
+  _PresenceDots(this.animation) : super(repaint: animation);
+  final Animation<double> animation;
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
+    final phase = animation.value * math.pi * 2;
+    final scale = math.min(size.width, size.height) / 256;
+    final paint = Paint();
+    for (final radius in [88.0, 72.0]) {
+      final wave = (math.sin(phase - radius / 25) + 1) / 2;
+      final r = (radius + 2 * wave) * scale;
+      canvas.drawCircle(
+        center,
+        r,
+        paint
+          ..style = PaintingStyle.fill
+          ..color = XiaoyuDesign.lavender.withValues(alpha: .025 + .025 * wave),
+      );
+      canvas.drawCircle(
+        center,
+        r,
+        paint
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = scale
+          ..color = XiaoyuDesign.lavender.withValues(alpha: .08 + .06 * wave),
+      );
+    }
+    paint.style = PaintingStyle.fill;
     for (var ring = 0; ring < 4; ring++) {
-      final radius = 68 + ring * 18.0;
+      final wave = (math.sin(phase - ring * .8) + 1) / 2;
+      final radius = (60 + ring * 20 + 2 * wave) * scale;
       for (var i = 0; i < 64; i++) {
         final angle = i * math.pi / 32;
+        final sparkle = math
+            .pow((math.sin(phase + i * 2.4 + ring) + 1) / 2, 3)
+            .toDouble();
         canvas.drawCircle(
           center + Offset(math.cos(angle), math.sin(angle)) * radius,
-          1.3,
-          Paint()
-            ..color = XiaoyuDesign.lavender.withValues(alpha: .32 - ring * .06),
+          (1 + .35 * sparkle) * scale,
+          paint
+            ..color = XiaoyuDesign.lavender.withValues(
+              alpha: (.15 - ring * .025) * (.45 + .55 * wave) + .16 * sparkle,
+            ),
         );
       }
     }
   }
 
   @override
-  bool shouldRepaint(_PresenceDots oldDelegate) => false;
-}
-
-class RoutePicker extends StatelessWidget {
-  const RoutePicker({super.key});
-  @override
-  Widget build(BuildContext context) => Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      section(context, context.s.audioRoute),
-      for (final e in {
-        'speakerphone': context.s.speaker,
-        'earpiece': context.s.earpiece,
-        'routeDefault': context.s.systemRoute,
-      }.entries)
-        ListTile(title: Text(e.value), onTap: () => context.pop(e.key)),
-    ],
-  );
+  bool shouldRepaint(_PresenceDots oldDelegate) =>
+      animation != oldDelegate.animation;
 }
 
 class CallTile extends StatelessWidget {

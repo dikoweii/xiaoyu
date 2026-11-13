@@ -35,6 +35,40 @@ migrate_working_dir/
 # Temporary golden-test failure images; committed baselines stay in goldens/.
 /test/ui/failures/
 
+# Local promotional drafts, recordings, and export bundles.
+/marketing/
+# Local publishing review; not part of the distributed project documentation.
+/docs/GIT_PUBLISH_REVIEW.md
+
+# Installers, native archives, and debug symbol bundles.
+*.apk
+*.aab
+*.ipa
+*.app/
+*.xcarchive/
+*.dSYM/
+
+# Local credentials, signing material, and runtime data (not app sources).
+.env
+.env.*
+!.env.example
+!.env.template
+*.p12
+*.p8
+*.mobileprovision
+*.provisionprofile
+*.jks
+*.keystore
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+
 # Symbolication related
 app.*.symbols
 
@@ -45,6 +79,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/build/
 
 # Widget Preview related
 .widget_preview/
