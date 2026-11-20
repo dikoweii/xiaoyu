@@ -64,7 +64,7 @@ jobs:
         run: flutter build ios --release --no-codesign --no-pub --build-number "$((1000 + GITHUB_RUN_NUMBER))"
       - name: Package the unsigned IPA
         run: |
-          xcrun lipo -verify_arch arm64 build/ios/iphoneos/Runner.app/Runner
+          xcrun lipo build/ios/iphoneos/Runner.app/Runner -verify_arch arm64
           python3 tool/ci/package_unsigned_ipa.py build/ios/iphoneos/Runner.app "dist/$IPA_NAME"
           cd dist
           shasum -a 256 "$IPA_NAME" > SHA256SUMS.txt

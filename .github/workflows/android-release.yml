@@ -37,16 +37,16 @@ jobs:
           flutter analyze --no-pub --fatal-infos
       - name: Test signing preparation with fake credentials
         run: python3 -m unittest discover -s test/ci -v
-      - name: Run ordinary tests
-        # Golden screenshots run in the independent UI verification workflow.
+      - name: Run logic tests
+        # UI, layout and golden tests remain local; CI checks logic only.
         run: |
           python3 - <<'PYTEST'
           import subprocess
           from pathlib import Path
-          golden = Path('test/ui/golden_test.dart')
-          tests = sorted(str(path) for path in Path('test').rglob('*_test.dart') if path != golden)
+          roots = [Path('test') / name for name in ['domain', 'application', 'data', 'presentation', 'harness']]
+          tests = sorted(str(path) for root in roots for path in root.rglob('*_test.dart') if path.name != 'layout_guard_test.dart')
           if not tests:
-              raise SystemExit('No ordinary tests were found.')
+              raise SystemExit('No logic tests were found.')
           subprocess.run(['flutter', 'test', '--no-pub', '--coverage', *tests], check=True)
           PYTEST
       - name: Preserve test diagnostics

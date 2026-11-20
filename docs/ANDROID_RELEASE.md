@@ -6,7 +6,7 @@
 
 工作流位于 [.github/workflows/android-release.yml](../.github/workflows/android-release.yml)。推送到 `main` 或在 Actions 页面手动运行都会触发：
 
-1. Ubuntu 24.04 使用固定 Flutter 3.50.0 / Dart 3.14.0 检查格式、静态分析、签名准备及全部普通测试，生成覆盖率数据。APK 工作流不依赖 macOS 或苹方字体。
+1. Ubuntu 24.04 使用固定 Flutter 3.50.0 / Dart 3.14.0 检查格式、静态分析、CI 辅助脚本及逻辑测试，生成覆盖率数据。APK 工作流不依赖 macOS 或苹方字体。
 2. Ubuntu 24.04 / JDK 17 使用仓库 Secrets 恢复签名配置，构建仅包含 `arm64-v8a` 的 release APK，并验证 APK 签名。
 3. 独立发布任务使用 `GITHUB_TOKEN` 创建草稿、上传 APK 和 SHA-256 摘要，再发布 GitHub 预发布版本。
 
@@ -14,9 +14,9 @@ Release 标签为 `android-v<pubspec版本>-build.<运行编号>`，固定对应
 
 APK 工作流中的检查和构建成功后才对用户公开 Release。失败或取消的上传可能留下未公开草稿，不会把不完整版本作为可下载发布。检查日志和构建产物在 Actions 中保留 14 天，Release 附件独立保留。
 
-## 独立 UI 验证
+## 验证范围
 
-[ui-verification.yml](../.github/workflows/ui-verification.yml) 在推送 main、Pull Request 或手动触发时，使用 macOS 15 跑完整 Harness 检查，保留生成代码校验、80/60 覆盖率门槛及黄金图对比。它通过 CoreText 查找系统苹方字体，不安装字体；字体缺失或截图不匹配会使该工作流失败，但不阻塞 APK 打包发布。APK 发布成功不等于 UI 验证通过，两份状态应分别查看。
+按用户要求，GitHub Actions 不运行 UI、布局、黄金图或设备测试，也不查找系统字体。Android 逻辑测试覆盖 domain、application、data、presentation 及非布局 Harness 测试；使用 WidgetTester 虚拟时间但不构建页面的业务计时测试仍属于逻辑检查。UI 测试和完整 `dart run tool/harness.dart check` 保留在本地。CI 覆盖率文件仅供查看，不代表完整 Harness 的 80/60 门槛或 UI/设备验收通过。
 
 ## 一次性签名配置
 
