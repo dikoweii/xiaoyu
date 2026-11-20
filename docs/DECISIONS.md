@@ -303,3 +303,6 @@ Character 在既有 config JSON 增加 voiceProvider，旧记录默认为 qwen_o
 
 
 按用户对 APK 打包范围的要求，将 Android 发布与完整 UI/Harness 验证拆成独立工作流。发布在 Ubuntu 执行格式、静态分析、签名准备及普通测试后构建签名 APK；macOS 保留完整生成校验、覆盖率门槛和黄金图对比，字体错误只影响 UI 验证状态。普通测试动态发现，仅将 golden_test.dart 路由到独立验证，不删除或禁用测试。替代方案：继续把 macOS 字体作为 APK 前置条件会阻塞无字体需求的构建；移除黄金图验证会丢失视觉回归检查。来源：[GitHub Actions 工作流语法](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions)。
+
+
+按用户要求，Android 发布仅构建 arm64-v8a，使用 Flutter 官方 --target-platform android-arm64 --split-per-abi 参数，保留全部 Agora 扩展。附件标注架构，发布前检查 ZIP 内 lib 的架构集合恰为 arm64-v8a，防止意外恢复通用包。仅收集 app-arm64-v8a-release.apk。target-platform 限制 Flutter 编译目标，split-per-abi 同时过滤插件原生库；仅用前者仍会打入其他架构的 Agora 库。ARM64 分包版本码在基础值上加 2000，保留 Flutter 官方规则。替代方案：多架构通用包约 248 MiB，包含用户不需要的 ARM32/x86_64 原生库；裁剪 Agora 扩展另需功能验证，本次不做。来源：[Flutter Android 发布文档](https://docs.flutter.dev/deployment/android)及本机 flutter build apk --help。
