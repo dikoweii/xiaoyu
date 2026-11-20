@@ -298,3 +298,8 @@ Character 在既有 config JSON 增加 voiceProvider，旧记录默认为 qwen_o
 未发现小遇专用正式签名，仅有通用 debug 密钥及另一项目签名；按用户“有则沿用、无则生成”的授权创建小遇专用 JKS，并保留本地私有记录。未配置签名时仅本地开发保留既有调试签名；CI 缺少 Secrets 必须失败，避免每次构建更换签名导致不能覆盖升级。此前调试签名的安装包需要卸载后安装新签名版本，文档说明本地数据影响。
 
 替代方案：每次运行创建 debug 密钥会破坏覆盖升级；把签名文件放入公开源码不适合该仓库；直接在 Linux 上接受不同黄金图或跳过检查会降低验收门槛；每次 main 推送标为正式稳定版会混淆内测与正式发布。IPA 需要另行确定签名和分发条件，不能把未签名产物宣称为可直接安装的 iOS 安装包。
+
+首次 GitHub 构建在字体定位步骤失败：运行器的苹方不位于原先假定的 Fonts/Font7 路径。改用系统 CoreText 的 CTFontCopyAttribute / kCTFontURLAttribute 查找真实注册路径，并遍历 AssetsV2 中的不同字体资产版本及隐藏字体文件；不下载或复制本机字体到公开仓库，不跳过黄金图。来源：[CoreText](https://developer.apple.com/documentation/coretext)、[CTFontCopyAttribute](https://developer.apple.com/documentation/coretext/ctfontcopyattribute(_:_:))。实际是否通过以新的 CI 检查为准。
+
+
+按用户对 APK 打包范围的要求，将 Android 发布与完整 UI/Harness 验证拆成独立工作流。发布在 Ubuntu 执行格式、静态分析、签名准备及普通测试后构建签名 APK；macOS 保留完整生成校验、覆盖率门槛和黄金图对比，字体错误只影响 UI 验证状态。普通测试动态发现，仅将 golden_test.dart 路由到独立验证，不删除或禁用测试。替代方案：继续把 macOS 字体作为 APK 前置条件会阻塞无字体需求的构建；移除黄金图验证会丢失视觉回归检查。来源：[GitHub Actions 工作流语法](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions)。
