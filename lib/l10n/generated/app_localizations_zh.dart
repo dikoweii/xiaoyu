@@ -169,7 +169,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get callCostBody =>
-      '本次使用你的账号，控制链路准备就绪后开始计费。默认最多 10 分钟，静音仍可能计费；进入后台或锁屏会结束通话。首次通话需要麦克风权限，不开启摄像头。';
+      '本次使用你的账号，控制链路准备就绪后开始计费。单次会话最长 2 小时，到达上限由平台自动结束。静音仍可能计费；进入后台或锁屏会结束通话。首次通话需要麦克风权限，不开启摄像头。';
 
   @override
   String get endCall => '结束通话';
@@ -262,6 +262,9 @@ class AppLocalizationsZh extends AppLocalizations {
       'ended': '已结束',
       'pending': '结束待核对',
       'failed': '连接失败',
+      'uploading': '正在上传照片',
+      'uploadFailed': '照片上传失败',
+      'uploadUnknown': '照片上传结果待核对',
       'draft': '草稿',
       'created': '已创建',
       'processing': '形象处理中',
@@ -301,8 +304,14 @@ class AppLocalizationsZh extends AppLocalizations {
       'notFound': '资源不存在或暂不可查询。',
       'protocol': '平台响应格式暂不兼容，请保留待核对状态。',
       'characterFieldsIncomplete': '请填写名称、人设并选择声音，检查文字是否超过长度限制。',
-      'avatarProcessing': '云端形象正在处理中，资料已保存。请稍后再次点击提交检查进度。',
+      'avatarUploadFailed': '照片上传失败，原图已保留。请重新提交或在高级设置中重新创建。',
+      'avatarImageChanged': '照片或账号已切换，请使用当前照片重新提交。',
+      'avatarUploadUnknown': '照片上传结果未确认，请在高级设置中查询已有形象，或手动重新创建。',
+      'avatarProcessing': '云端形象正在处理中，资料已保存。状态会自动更新，可返回首页查看。',
       'avatarFailed': '云端形象处理失败。请在高级设置中重新创建形象，或更换照片。',
+      'voiceInvalid': '音色与语音模型不匹配，请重新选择。',
+      'voiceChangeUnsupported': '豆包暂不支持通话中更换音色，请在角色编辑页设置下次通话的声音。',
+      'textChatUnsupported': '此语音模型暂不支持文字对话，请直接说话或使用快捷动作。',
       'other': '操作未完成，请检查网络或稍后重试。',
     });
     return '$_temp0';
@@ -312,13 +321,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get confirm => '确认';
 
   @override
-  String get unsavedDraft => '保存当前修改为草稿后返回。';
+  String get unsavedChanges => '保存当前修改？';
+
+  @override
+  String get continueEditing => '继续编辑';
+
+  @override
+  String get discardChanges => '放弃修改';
+
+  @override
+  String get unsavedDraft => '是否保存当前修改？放弃修改后将无法恢复。';
 
   @override
   String get knowledgeUnavailable => '知识库 · 暂未接入';
 
   @override
-  String get voicePreviewUnavailable => '音色试听暂未接入，可选择通话音色';
+  String get voicePreviewUnavailable => '官方音色目录 · 暂无试听，选择音色不会发起通话。';
 
   @override
   String get brandLine => '有你在的每一刻，都值得被倾听';
@@ -661,5 +679,54 @@ class AppLocalizationsZh extends AppLocalizations {
       'other': '',
     });
     return '$_temp0';
+  }
+
+  @override
+  String get voiceQwen => '千问';
+
+  @override
+  String get voiceDoubao => '豆包';
+
+  @override
+  String voiceCurrent(String name) {
+    return '当前：$name';
+  }
+
+  @override
+  String get voiceSearch => '搜索名称、ID、风格或语种';
+
+  @override
+  String get voiceClearSearch => '清除搜索';
+
+  @override
+  String voiceCount(int count) {
+    return '匹配 $count 个音色';
+  }
+
+  @override
+  String get voiceNoResults => '没有匹配的音色，请更换关键词或供应商。';
+
+  @override
+  String get voiceDoubaoHint => '豆包音色使用国内服务，暂不支持文字对话及通话内换音色；可直接说话或使用快捷动作。';
+
+  @override
+  String voiceSavedNotListed(String voice) {
+    return '已保存音色“$voice”未收录于当前目录，原选择已保留，平台可用性仍需确认；也可重新选择目录音色。';
+  }
+
+  @override
+  String get textChatUnsupported => '此语音模型暂不支持文字对话，请直接说话或使用快捷动作。';
+
+  @override
+  String get voicePreviewFailed => '试听加载失败，请稍后重试';
+
+  @override
+  String voicePlayPreview(String voice) {
+    return '试听$voice';
+  }
+
+  @override
+  String voiceStopPreview(String voice) {
+    return '停止试听$voice';
   }
 }

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../domain/models.dart';
 import '../l10n/generated/app_localizations.dart';
+import '../presentation/avatar_status_sync.dart';
 import '../ui/screens.dart';
 import '../ui/core/design.dart';
 import 'runtime.dart';
@@ -75,6 +76,10 @@ class _XiaoyuAppState extends ConsumerState<XiaoyuApp>
     with WidgetsBindingObserver {
   late final Future<void> Function(bool) _toggleScreenAwake;
   late final StreamSubscription<CallSnapshot> _callSubscription;
+  late final AvatarStatusSync _avatarSync;
+  late final ProviderSubscription<AsyncValue<List<Character>>>
+  _avatarSubscription;
+  late final GoRouter _router;
   Future<void> _screenOperation = Future.value();
   bool? _screenAwake;
   bool _foreground = true;
@@ -92,7 +97,27 @@ class _XiaoyuAppState extends ConsumerState<XiaoyuApp>
     _callSubscription = ref.read(runtimeProvider).calls.changes.listen((_) {
       _syncScreenAwake();
     });
+    final runtime = ref.read(runtimeProvider);
+    _avatarSync = AvatarStatusSync(
+      credential: () => runtime.credentials.current,
+      refresh: runtime.characters.refresh,
+    );
+    _avatarSubscription = ref.listenManual(charactersProvider, (_, next) {
+      final characters = next.asData?.value;
+      if (characters != null) _avatarSync.update(characters);
+    }, fireImmediately: true);
+    _router = ref.read(routerProvider);
+    _router.routerDelegate.addListener(_syncAvatars);
+    _syncAvatars();
     _syncScreenAwake();
+  }
+
+  void _syncAvatars() {
+    _avatarSync.setActive(
+      _foreground &&
+          _router.routerDelegate.currentConfiguration.isNotEmpty &&
+          _router.state.uri.path == '/',
+    );
   }
 
   void _syncScreenAwake({bool force = false}) {
@@ -136,11 +161,15 @@ class _XiaoyuAppState extends ConsumerState<XiaoyuApp>
         state == AppLifecycleState.detached) {
       unawaited(ref.read(runtimeProvider).calls.end('app_background'));
     }
+    _syncAvatars();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _router.routerDelegate.removeListener(_syncAvatars);
+    _avatarSubscription.close();
+    _avatarSync.dispose();
     unawaited(_callSubscription.cancel());
     _setScreenAwake(false);
     super.dispose();

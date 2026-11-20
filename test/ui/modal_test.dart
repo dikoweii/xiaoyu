@@ -34,10 +34,7 @@ void main() {
                   children: [
                     TextButton(
                       key: const Key('open-sheet'),
-                      onPressed: () => sheet<String>(
-                        context,
-                        const VoicePicker(selected: 'Serena'),
-                      ),
+                      onPressed: () => chooseVoice(context, 'Serena'),
                       child: const Text('Voice'),
                     ),
                     TextButton(

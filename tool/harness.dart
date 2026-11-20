@@ -10,6 +10,7 @@ import 'package:yaml/yaml.dart';
 import 'harness/policy.dart';
 import 'harness/comparison.dart';
 import 'harness/skills.dart';
+import 'harness/retention.dart';
 
 final root = Directory.current;
 final output = Directory(p.join(root.path, 'build/harness'));
@@ -591,7 +592,8 @@ bool verifiedReport(
   String hash, {
   String? platform,
 }) {
-  if (report['sourceHash'] != hash ||
+  if (report['evidenceState'] == 'expired' ||
+      report['sourceHash'] != hash ||
       report['unchanged'] != true ||
       (platform == null && report['status'] != 'passed')) {
     return false;
@@ -668,6 +670,7 @@ String latestReportState(
         ..sort((a, b) => '${b['finishedAt']}'.compareTo('${a['finishedAt']}'));
   if (candidates.isEmpty) return 'unverified';
   final latest = candidates.first;
+  if (latest['evidenceState'] == 'expired') return 'expired';
   if (latest['status'] == 'running') return 'unverified';
   if (verifiedReport(
     latest,
@@ -755,6 +758,7 @@ Future<bool> report({bool finish = false}) async {
             'command': r['command'],
             'platform': r['platform'],
             'status': r['status'],
+            'evidenceState': r['evidenceState'] ?? 'retained',
             'currentSource': r['sourceHash'] == hash,
             'unchanged': r['unchanged'],
             'report': r['reportPath'],
@@ -780,7 +784,7 @@ Future<bool> report({bool finish = false}) async {
   writeComparison(output);
   writeJson(File(p.join(output.path, 'summary.json')), summary);
   File(p.join(output.path, 'summary.md')).writeAsStringSync(
-    '# 小遇验证报告\n\n任务：${task?['goal'] ?? '尚未开始'}\n\n验收条件：${task?['acceptance'] ?? '无'}\n\n${states.entries.map((e) => '- ${e.key}: ${e.value}').join('\n')}\n\n可完成：$ready\n\n证据（currentSource=false 或 unchanged=false 的旧结果不用于通过）：\n\n${reports.take(20).map((r) => '- ${r['command']} ${r['platform'] ?? ''}: ${r['status']}; currentSource=${r['sourceHash'] == hash}; unchanged=${r['unchanged']} — [报告](${p.relative(r['reportPath'] as String, from: output.path)})').join('\n')}\n\n各报告 steps 包含命令、退出码、时间、日志与摘要，失败原因见对应日志。设计对照见 [六屏对照](design-comparison.html)。\n\n未覆盖：知识库导入、音色试听未实现；真实 RTC 媒体和计费未在本次离线检查中验收。视觉审查须在宿主由用户确认，CLI 不接受自填 passed。MCP 调用在宿主记录中审计；本报告不伪造可信记录。\n',
+    '# 小遇验证报告\n\n任务：${task?['goal'] ?? '尚未开始'}\n\n验收条件：${task?['acceptance'] ?? '无'}\n\n${states.entries.map((e) => '- ${e.key}: ${e.value}').join('\n')}\n\n可完成：$ready\n\n证据（currentSource=false、unchanged=false 或 evidenceState=expired 的旧结果不用于通过）：\n\n${reports.take(20).map((r) => '- ${r['command']} ${r['platform'] ?? ''}: ${r['status']}; evidenceState=${r['evidenceState'] ?? 'retained'}; currentSource=${r['sourceHash'] == hash}; unchanged=${r['unchanged']} — [报告](${p.relative(r['reportPath'] as String, from: output.path)})').join('\n')}\n\n各报告 steps 包含命令、退出码、时间、日志与摘要，失败原因见对应日志。设计对照见 [六屏对照](design-comparison.html)。\n\n未覆盖：知识库导入、音色试听未实现；真实 RTC 媒体和计费未在本次离线检查中验收。视觉审查须在宿主由用户确认，CLI 不接受自填 passed。MCP 调用在宿主记录中审计；本报告不伪造可信记录。\n',
   );
   stdout.writeln(encoder.convert(summary));
   if (finish && ready) {
@@ -788,6 +792,73 @@ Future<bool> report({bool finish = false}) async {
     writeJson(File(p.join(output.path, 'task.json')), task);
   }
   return ready;
+}
+
+ArtifactRetention retentionPolicy() => ArtifactRetention(
+  root,
+  keepPerPlatform:
+      ((config['retention'] as Map?)?['artifacts_per_platform'] as num? ?? 3)
+          .toInt(),
+  keepRunsPerCommand:
+      ((config['retention'] as Map?)?['runs_per_command'] as num? ?? 3).toInt(),
+);
+
+Future<List<String>> retentionReferences() async {
+  final listing = await Process.run('git', [
+    'ls-files',
+    '--cached',
+    '--others',
+    '--exclude-standard',
+    '-z',
+  ]);
+  if (listing.exitCode != 0) {
+    throw StateError('Cannot discover report references');
+  }
+  final textExtensions = {
+    '.md',
+    '.json',
+    '.yaml',
+    '.yml',
+    '.html',
+    '.txt',
+    '.log',
+  };
+  final paths = (listing.stdout as String)
+      .split('\u0000')
+      .where((s) => s.isNotEmpty && textExtensions.contains(p.extension(s)))
+      .map((s) => p.join(root.path, s))
+      .toSet();
+  void visit(Directory dir) {
+    for (final entity in dir.listSync(followLinks: false)) {
+      if (entity is Directory &&
+          !['runs', 'gc'].contains(p.basename(entity.path))) {
+        visit(entity);
+      } else if (entity is File &&
+          textExtensions.contains(p.extension(entity.path)) &&
+          ![
+            'gc-last.json',
+            'pins.json',
+            'summary.json',
+            'summary.md',
+          ].contains(p.basename(entity.path))) {
+        paths.add(entity.path);
+      }
+    }
+  }
+
+  visit(output);
+  return paths.toList()..sort();
+}
+
+Future<void> automaticCollection() async {
+  if ((config['retention'] as Map?)?['automatic'] != true) return;
+  final collected = await retentionPolicy().collect(
+    dryRun: false,
+    referenceFiles: await retentionReferences(),
+  );
+  stderr.writeln(
+    'artifact-gc: removed ${(collected['removed'] as List).length} copies and ${(collected['removedHistory'] as List).length} historical runs, ${(collected['removedBytes'] as int) + (collected['removedHistoryBytes'] as int)} logical bytes.',
+  );
 }
 
 Future<void> main(List<String> arguments) async {
@@ -811,6 +882,11 @@ Future<void> main(List<String> arguments) async {
     ..addMultiOption('skill')
     ..addFlag('load', negatable: false)
     ..addFlag('catalog', negatable: false)
+    ..addFlag('dry-run', negatable: false)
+    ..addFlag('apply', negatable: false)
+    ..addOption('pin')
+    ..addOption('unpin')
+    ..addOption('reason')
     ..addOption('device-id');
   try {
     config = jsonDecode(
@@ -819,11 +895,42 @@ Future<void> main(List<String> arguments) async {
     final args = parser.parse(arguments);
     if (args.rest.length != 1) {
       throw ArgumentError(
-        'Use doctor|start|skills|check|build|device|report|finish|self-test|install-hooks|golden-update',
+        'Use doctor|start|skills|check|build|device|report|finish|self-test|install-hooks|golden-update|gc',
       );
     }
     final cmd = args.rest.single;
+    if (cmd != 'gc' &&
+        ['dry-run', 'apply', 'pin', 'unpin', 'reason'].any(args.wasParsed)) {
+      throw ArgumentError('GC options are only valid for the gc command');
+    }
     output.createSync(recursive: true);
+    if (cmd == 'gc') {
+      final retention = retentionPolicy();
+      if (args.option('pin') != null || args.option('unpin') != null) {
+        if (args.option('pin') != null && args.option('unpin') != null ||
+            args.flag('apply') ||
+            args.flag('dry-run')) {
+          throw ArgumentError('Use a single pin/unpin operation');
+        }
+        await retention.pin(
+          args.option('pin') ?? args.option('unpin')!,
+          args.option('reason') ??
+              (args.option('unpin') == null ? '' : 'unpin'),
+          remove: args.option('unpin') != null,
+        );
+      } else if (args.option('reason') != null) {
+        throw ArgumentError('--reason requires --pin');
+      }
+      if (args.flag('apply') && args.flag('dry-run')) {
+        throw ArgumentError('Choose --apply or --dry-run');
+      }
+      final collected = await retention.collect(
+        dryRun: !args.flag('apply'),
+        referenceFiles: await retentionReferences(),
+      );
+      stdout.writeln(encoder.convert(collected));
+      return;
+    }
     if (cmd == 'skills') {
       await showSkills(
         kind: args['kind'] as String?,
@@ -894,6 +1001,16 @@ Future<void> main(List<String> arguments) async {
         await Process.run('chmod', ['+x', f.path]);
       }
       return;
+    }
+    if ([
+      'check',
+      'build',
+      'device',
+      'doctor',
+      'self-test',
+      'golden-update',
+    ].contains(cmd)) {
+      await automaticCollection();
     }
     runId = DateTime.now().toUtc().microsecondsSinceEpoch.toString();
     runDir = Directory(p.join(output.path, 'runs', runId))
@@ -1058,6 +1175,9 @@ Future<void> main(List<String> arguments) async {
       'steps': steps,
       'finishedAt': DateTime.now().toUtc().toIso8601String(),
     });
+    // Trim the just-added generation as well, so a completed build leaves N
+    // copies rather than N+1 until the next command.
+    await automaticCollection();
     stdout.writeln('Report: ${p.relative(runDir.path)}/report.json');
     if (!ok &&
         !(cmd == 'golden-update' &&

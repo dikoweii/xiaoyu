@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:xiaoyu/application/call_coordinator.dart';
 import 'package:xiaoyu/domain/call_ports.dart';
 import 'package:xiaoyu/domain/models.dart';
+import 'package:xiaoyu/domain/voice_catalog.dart';
 
 const character = Character(
   id: 'character-one',
@@ -21,12 +22,14 @@ final created = <String, dynamic>{
 
 class FakeApi implements LiveApi {
   int creates = 0;
+  Json? lastBody;
   Completer<Json>? pending;
   bool queryFails = false;
   String status = 'ended';
   @override
   Future<Json> createLive(Credential c, Json body) async {
     creates++;
+    lastBody = body;
     return pending == null ? created : pending!.future;
   }
 
@@ -177,6 +180,109 @@ void main() {
   tearDown(() async {
     await call.dispose();
   });
+
+  testWidgets(
+    'session duration is owned by the platform, including its limit',
+    (tester) async {
+      // Create streams in the same fake-time zone as the session timers.
+      final api = FakeApi();
+      final store = FakeStore();
+      final signal = FakeSignal();
+      final rtc = FakeRtc();
+      final call = CallCoordinator(
+        api: api,
+        store: store,
+        signalFactory: (_, _) => signal,
+        rtcFactory: () => rtc,
+        microphonePermission: () async => true,
+        queryDelays: [],
+      );
+      addTearDown(call.dispose);
+      await call.start(character, credential, 'profile');
+      await tester.pump(const Duration(minutes: 10));
+      expect(call.snapshot.phase, CallPhase.connected);
+      expect(rtc.disposals, 0);
+      expect(signal.sent, isNot(contains(5)));
+
+      // Advancing the client clock does not synthesize a server time limit.
+      await tester.pump(const Duration(minutes: 110));
+      expect(call.snapshot.phase, CallPhase.connected);
+      expect(api.creates, 1);
+      expect(rtc.disposals, 0);
+
+      signal.controller.add({'type': 6});
+      // Stream teardown also schedules work outside the virtual clock.
+      for (var step = 0; step < 10 && call.snapshot.active; step++) {
+        await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+        await tester.pump();
+      }
+      expect(call.snapshot.phase, CallPhase.ended);
+      expect(store.rows.values.single['endReason'], 'platform_end');
+      expect(store.rows.values.single['endConfirmed'], isTrue);
+      expect(rtc.disposals, 1);
+      expect(signal.closed, isTrue);
+      expect(api.creates, 1);
+      await tester.pump(const Duration(hours: 1));
+      expect(rtc.disposals, 1);
+      expect(api.creates, 1);
+    },
+  );
+
+  test('Doubao request uses matching provider and voice, with unsupported commands blocked', () async {
+    const voice = 'zh_female_vv_uranus_bigtts';
+    await call.start(
+      character.copyWith(voiceProvider: VoiceProvider.doubao, voice: voice),
+      credential,
+      'profile',
+    );
+    expect(call.snapshot.interactive, isTrue);
+    expect(api.lastBody!['voice_model'], {'provider': 'doubao'});
+    expect(api.lastBody!['avatar']['voice'], voice);
+    final before = signal.sent.toList();
+    await expectLater(
+      call.sendText('Hello'),
+      throwsA(
+        isA<AppFailure>().having((e) => e.code, 'code', 'textChatUnsupported'),
+      ),
+    );
+    await expectLater(
+      call.changeVoice(voice),
+      throwsA(
+        isA<AppFailure>().having(
+          (e) => e.code,
+          'code',
+          'voiceChangeUnsupported',
+        ),
+      ),
+    );
+    expect(signal.sent, before);
+    expect(store.texts, isEmpty);
+    expect(call.snapshot.voice, voice);
+    call.sendAction('Wave');
+    expect(signal.sent.last, 101);
+  });
+
+  test(
+    'wrong-provider voices are rejected before paid creation or update',
+    () async {
+      await call.start(
+        character.copyWith(voice: 'zh_female_vv_uranus_bigtts'),
+        credential,
+        'profile',
+      );
+      expect(api.creates, 0);
+      expect(call.snapshot.error, 'voiceInvalid');
+      await call.start(character, credential, 'profile');
+      expect(api.creates, 1);
+      final before = signal.sent.toList();
+      await expectLater(
+        call.changeVoice('zh_female_vv_uranus_bigtts'),
+        throwsA(isA<AppFailure>()),
+      );
+      expect(signal.sent, before);
+      expect(call.snapshot.voice, character.voice);
+    },
+  );
 
   test(
     'playback mute is independent of microphone and preserves readiness',

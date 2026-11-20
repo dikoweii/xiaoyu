@@ -25,6 +25,11 @@ class LocalRepository {
   Future<void> setSetting(String key, String value) => db
       .into(db.settings)
       .insertOnConflictUpdate(SettingsCompanion.insert(key: key, value: value));
+  Future<void> deleteSetting(String key) async =>
+      (db.delete(db.settings)..where((t) => t.key.equals(key))).go();
+  Future<void> clearEditingSessions() async => (db.delete(
+    db.settings,
+  )..where((t) => t.key.like('characterEdit.%'))).go();
   Future<String> profileId() async {
     final existing = await setting('profileId');
     if (existing != null) return existing;
@@ -167,6 +172,8 @@ class LocalRepository {
   static Future<LocalRepository> open() async {
     final root = await getApplicationSupportDirectory();
     final repo = LocalRepository(AppDatabase(), root);
+    // Interrupted forms are temporary, never implicitly published as roles.
+    await repo.clearEditingSessions();
     await repo.profileId();
     return repo;
   }

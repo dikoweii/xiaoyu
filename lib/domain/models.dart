@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'voice_catalog.dart';
+
 typedef Json = Map<String, dynamic>;
 
 Json jsonObject(Object? value) => value is Map
@@ -34,6 +36,7 @@ class Character {
     this.avatarId = '',
     this.assetStatus = 'draft',
     this.voice = 'Serena',
+    this.voiceProvider = VoiceProvider.qwenOmni,
     this.greeting = '',
     this.memory = false,
     this.sourceImageUrl = '',
@@ -41,6 +44,7 @@ class Character {
   });
   final String id, name, persona, credentialId, summary, imagePath;
   final String avatarId, assetStatus, voice, greeting;
+  final VoiceProvider voiceProvider;
   final bool memory;
   final String sourceImageUrl, officialRoleId;
   bool get ready =>
@@ -59,6 +63,7 @@ class Character {
     String? avatarId,
     String? assetStatus,
     String? voice,
+    VoiceProvider? voiceProvider,
     String? greeting,
     bool? memory,
     String? sourceImageUrl,
@@ -73,6 +78,7 @@ class Character {
     avatarId: avatarId ?? this.avatarId,
     assetStatus: assetStatus ?? this.assetStatus,
     voice: voice ?? this.voice,
+    voiceProvider: voiceProvider ?? this.voiceProvider,
     greeting: greeting ?? this.greeting,
     memory: memory ?? this.memory,
     sourceImageUrl: sourceImageUrl ?? this.sourceImageUrl,
@@ -89,6 +95,7 @@ class Character {
     'avatarId': avatarId,
     'assetStatus': assetStatus,
     'voice': voice,
+    'voiceProvider': voiceProvider.apiValue,
     'greeting': greeting,
     'memory': memory,
     'sourceImageUrl': sourceImageUrl,
@@ -104,6 +111,11 @@ class Character {
     avatarId: j['avatarId'] as String? ?? '',
     assetStatus: j['assetStatus'] as String? ?? 'draft',
     voice: j['voice'] as String? ?? 'Serena',
+    voiceProvider: switch (j['voiceProvider']) {
+      null || 'qwen_omni' => VoiceProvider.qwenOmni,
+      'doubao' => VoiceProvider.doubao,
+      _ => throw const AppFailure('voiceInvalid'),
+    },
     greeting: j['greeting'] as String? ?? '',
     memory: j['memory'] as bool? ?? false,
     sourceImageUrl: j['sourceImageUrl'] as String? ?? '',
@@ -208,6 +220,9 @@ void validateCharacterDetails(Character c) {
       c.voice.isEmpty) {
     throw const AppFailure('characterFieldsIncomplete');
   }
+  if (!isCompatibleVoice(c.voiceProvider, c.voice)) {
+    throw const AppFailure('voiceInvalid');
+  }
 }
 
 Json buildSession(Character c, String profileId) {
@@ -219,7 +234,7 @@ Json buildSession(Character c, String profileId) {
     'call_mode': 'video',
     'resolution': '720p',
     'rtc': {'provider': 'agora'},
-    'voice_model': {'provider': 'qwen_omni'},
+    'voice_model': {'provider': c.voiceProvider.apiValue},
     'avatar': {
       'id': c.avatarId,
       'persona': c.persona,

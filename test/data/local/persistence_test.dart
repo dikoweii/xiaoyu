@@ -9,6 +9,7 @@ import 'package:xiaoyu/data/local/call_store.dart';
 import 'package:xiaoyu/data/character_repository.dart';
 import 'package:xiaoyu/data/services/vidu_api.dart';
 import 'package:xiaoyu/domain/models.dart' as domain;
+import 'package:xiaoyu/domain/voice_catalog.dart';
 
 import '../../support/offline.dart';
 
@@ -36,6 +37,37 @@ void main() {
   tearDown(() async {
     await db.close();
     dir.deleteSync(recursive: true);
+  });
+  test('Doubao voice and provider survive SQLite reopen and call snapshot persistence', () async {
+    final doubao = character.copyWith(
+      voiceProvider: VoiceProvider.doubao,
+      voice: 'zh_female_vv_uranus_bigtts',
+    );
+    await local.saveCharacter(doubao);
+    await calls.begin(
+      'doubao-call',
+      doubao,
+      const domain.Credential('account', 'test-only-key'),
+    );
+    await db.close();
+    db = AppDatabase.forTesting(
+      NativeDatabase(File('${dir.path}/test.sqlite')),
+    );
+    local = LocalRepository(db, dir);
+    final restored = (await local.character(character.id))!;
+    expect(restored.voiceProvider, VoiceProvider.doubao);
+    expect(restored.voice, doubao.voice);
+    expect(restored.id, character.id);
+    expect(
+      restored.copyWith(name: 'Changed').voiceProvider,
+      VoiceProvider.doubao,
+    );
+    final snapshot = (await local.watchCalls().first).single.characterSnapshot;
+    expect(snapshot, contains('"voiceProvider":"doubao"'));
+    expect(snapshot, contains(doubao.voice));
+    expect(domain.buildSession(restored, 'profile')['voice_model'], {
+      'provider': 'doubao',
+    });
   });
   test('profile, character, message and usage survive closing and reopening SQLite', () async {
     final profile = await local.profileId();

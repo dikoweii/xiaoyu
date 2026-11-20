@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 
 import '../domain/call_ports.dart';
 import '../domain/models.dart';
+import '../domain/voice_catalog.dart';
 
 class _Attempt {
   _Attempt(this.character, this.credential, this.profileId);
@@ -24,7 +25,7 @@ class _Attempt {
   Completer<void>? initialized;
   Completer<void>? voiceAck;
   bool voiceUnknown = false, playbackUpdating = false;
-  Timer? preparationTimer, durationTimer;
+  Timer? preparationTimer;
   final clock = Stopwatch();
   Future<void>? finishing;
 }
@@ -167,9 +168,6 @@ class CallCoordinator {
           readyAt: now,
         ),
       );
-      a.durationTimer = Timer(const Duration(minutes: 10), () {
-        unawaited(end('duration_limit'));
-      });
       final rtc = a.rtc = rtcFactory();
       a.media = rtc.events.listen((event) => _onRtc(a, event));
       await rtc.join(jsonObject(response['rtc']));
@@ -323,7 +321,6 @@ class CallCoordinator {
     a.cancelled = true;
     a.clock.stop();
     a.preparationTimer?.cancel();
-    a.durationTimer?.cancel();
     if (_attempt == a) _emit(snapshot.copyWith(phase: CallPhase.ending));
     Future<void> attempt(Future<void> Function() work) async {
       try {
@@ -414,6 +411,9 @@ class CallCoordinator {
 
   Future<void> sendText(String text) async {
     final a = _interactive();
+    if (a.character.voiceProvider == VoiceProvider.doubao) {
+      throw const AppFailure('textChatUnsupported');
+    }
     if (text.trim().isEmpty || text.runes.length > 1000) {
       throw const AppFailure('inputInvalid');
     }
@@ -472,6 +472,12 @@ class CallCoordinator {
   Future<void> setRoute(String route) => _interactive().rtc!.route(route);
   Future<void> changeVoice(String voice) async {
     final a = _interactive();
+    if (a.character.voiceProvider == VoiceProvider.doubao) {
+      throw const AppFailure('voiceChangeUnsupported');
+    }
+    if (!isCompatibleVoice(a.character.voiceProvider, voice)) {
+      throw const AppFailure('voiceInvalid');
+    }
     if (a.voiceAck != null || a.voiceUnknown) {
       throw const AppFailure('voicePending');
     }

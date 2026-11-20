@@ -25,22 +25,11 @@ class CallScreen extends ConsumerStatefulWidget {
 }
 
 class _CallScreenState extends ConsumerState<CallScreen> {
-  Timer? timer;
   final input = TextEditingController();
   bool composerOpen = false, leaving = false;
-  @override
-  void initState() {
-    super.initState();
-    if (ref.read(presenceAnimationProvider)) {
-      timer = Timer.periodic(const Duration(seconds: 1), (_) {
-        if (mounted) setState(() {});
-      });
-    }
-  }
 
   @override
   void dispose() {
-    timer?.cancel();
     input.dispose();
     super.dispose();
   }
@@ -51,7 +40,6 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final call = ref.watch(callProvider).value ?? coordinator.snapshot;
     final preparing =
         call.active && !call.interactive && call.phase != CallPhase.ending;
-    final elapsed = coordinator.elapsed.inSeconds;
     if (preparing) {
       return AppPage(
         background: _CallBackdrop(
@@ -215,13 +203,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Text(
-                                '${elapsed ~/ 60}:${(elapsed % 60).toString().padLeft(2, '0')}',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0x99FFFFFF),
-                                  fontFeatures: [FontFeature.tabularFigures()],
-                                ),
+                              _CallDuration(
+                                elapsed: () => coordinator.elapsed,
+                                running:
+                                    call.active &&
+                                    call.controlReady &&
+                                    call.phase != CallPhase.ending,
                               ),
                             ],
                           ),
@@ -338,6 +325,63 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   }
 }
 
+/// Refreshes only the time label, using the coordinator's existing stopwatch.
+class _CallDuration extends StatefulWidget {
+  const _CallDuration({required this.elapsed, required this.running});
+  final Duration Function() elapsed;
+  final bool running;
+
+  @override
+  State<_CallDuration> createState() => _CallDurationState();
+}
+
+class _CallDurationState extends State<_CallDuration> {
+  Timer? _timer;
+  late int _seconds;
+
+  @override
+  void initState() {
+    super.initState();
+    _sync();
+  }
+
+  @override
+  void didUpdateWidget(covariant _CallDuration oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _sync();
+  }
+
+  void _sync() {
+    _seconds = widget.elapsed().inSeconds;
+    if (widget.running) {
+      _timer ??= Timer.periodic(const Duration(seconds: 1), (_) {
+        final seconds = widget.elapsed().inSeconds;
+        if (seconds != _seconds) setState(() => _seconds = seconds);
+      });
+    } else {
+      _timer?.cancel();
+      _timer = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Text(
+    '${_seconds ~/ 60}:${(_seconds % 60).toString().padLeft(2, '0')}',
+    key: const Key('call-duration'),
+    style: const TextStyle(
+      fontSize: 12,
+      color: Color(0x99FFFFFF),
+      fontFeatures: [FontFeature.tabularFigures()],
+    ),
+  );
+}
+
 /// A live indicator that respects the system's reduced motion setting.
 class _CallPresence extends StatefulWidget {
   const _CallPresence({required this.animate});
@@ -390,10 +434,7 @@ class _CallPresenceState extends State<_CallPresence>
     label: context.s.status('connected'),
     child: FadeTransition(
       key: const Key('call-live-indicator'),
-      opacity: Tween<double>(
-        begin: .4,
-        end: 1,
-      ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOut)),
+      opacity: opacity,
       child: Container(
         width: 8,
         height: 8,

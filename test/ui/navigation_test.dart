@@ -119,12 +119,12 @@ void main() {
     expect(find.text('尚未保存的名字'), findsOneWidget);
     await tester.tap(back);
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('confirm-cancel')));
+    await tester.tap(find.byKey(const Key('edit-continue')));
     await tester.pumpAndSettle();
     expect(find.text('尚未保存的名字'), findsOneWidget);
     await tester.tap(back);
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('confirm-accept')));
+    await tester.tap(find.byKey(const Key('edit-save')));
     await tester.pumpAndSettle();
     expect(fixture.container.read(routerProvider).state.uri.path, '/');
     expect((await fixture.app.local.character(companion.id))!.name, '尚未保存的名字');

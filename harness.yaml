@@ -1,4 +1,8 @@
 version: 1
+retention:
+  automatic: true
+  artifacts_per_platform: 3
+  runs_per_command: 3
 sdk:
   flutter: 3.50.0
   dart: 3.14.0
@@ -24,11 +28,16 @@ required_tests:
   - test/ui/native_glass_test.dart
   - test/ui/glass_interaction_test.dart
   - test/ui/call_composer_test.dart
+  - test/ui/call_duration_test.dart
+  - test/ui/avatar_status_sync_test.dart
+  - test/presentation/avatar_status_sync_test.dart
+  - test/data/character_preparation_test.dart
   - test/presentation/quick_actions_test.dart
   - test/ui/modal_test.dart
   - test/ui/golden_test.dart
   - test/harness/policy_test.dart
   - test/harness/skills_test.dart
+  - test/harness/retention_test.dart
 skill_routing:
   kinds:
     ui: [ui, analysis, test]

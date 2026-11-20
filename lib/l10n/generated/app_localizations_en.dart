@@ -177,7 +177,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get callCostBody =>
-      'This uses your account credits. Billing starts when the control connection is ready. The default limit is 10 minutes. Muting may still incur charges. The call ends when the app goes into the background or the screen locks. Microphone access is required; your camera stays off.';
+      'This uses your account credits. Billing starts when the control connection is ready. Each session lasts up to 2 hours; the platform ends it at the limit. Muting may still incur charges. The call ends when the app goes into the background or the screen locks. Microphone access is required; your camera stays off.';
 
   @override
   String get endCall => 'End call';
@@ -275,6 +275,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'ended': 'Ended',
       'pending': 'Ending unconfirmed',
       'failed': 'Failed',
+      'uploading': 'Uploading photo',
+      'uploadFailed': 'Photo upload failed',
+      'uploadUnknown': 'Photo upload outcome unconfirmed',
       'draft': 'Draft',
       'created': 'Created',
       'processing': 'Processing avatar',
@@ -321,8 +324,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'protocol':
           'The platform response is incompatible. Keep the pending record.',
       'characterFieldsIncomplete': 'Enter a name and persona, choose a voice, and check the text length limits.',
-      'avatarProcessing': 'Your cloud avatar is processing. Details are saved. Tap Submit again later to check its status.',
+      'avatarUploadFailed': 'Photo upload failed. The original is saved. Submit again or recreate it in Advanced settings.',
+      'avatarImageChanged':
+          'The photo or account changed. Submit the current photo again.',
+      'avatarUploadUnknown': 'Photo upload outcome unknown. Check existing avatars in Advanced settings or recreate it manually.',
+      'avatarProcessing': 'Your cloud avatar is processing. Details are saved. Its status updates automatically; you can return Home.',
       'avatarFailed': 'Cloud avatar processing failed. Recreate it in Advanced settings or choose another photo.',
+      'voiceInvalid':
+          'Voice and voice model do not match. Please choose again.',
+      'voiceChangeUnsupported': 'Doubao does not support changing voices during a call. Edit the character for the next call.',
+      'textChatUnsupported': 'This voice model does not support text chat. Speak directly or use quick actions.',
       'other':
           'The operation did not complete. Check the network or try later.',
     });
@@ -333,14 +344,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirm => 'Confirm';
 
   @override
-  String get unsavedDraft => 'Save your changes as a draft before leaving.';
+  String get unsavedChanges => 'Save changes?';
+
+  @override
+  String get continueEditing => 'Keep editing';
+
+  @override
+  String get discardChanges => 'Discard changes';
+
+  @override
+  String get unsavedDraft => 'Save your changes before leaving?';
 
   @override
   String get knowledgeUnavailable => 'Knowledge · Not available yet';
 
   @override
   String get voicePreviewUnavailable =>
-      'Voice preview is not available yet. Select a voice for calls.';
+      'Official voice directory · Preview is not available. Choosing a voice does not start a call.';
 
   @override
   String get brandLine => 'Every moment deserves to be heard';
@@ -691,5 +711,58 @@ class AppLocalizationsEn extends AppLocalizations {
       'other': '',
     });
     return '$_temp0';
+  }
+
+  @override
+  String get voiceQwen => 'Qwen';
+
+  @override
+  String get voiceDoubao => 'Doubao';
+
+  @override
+  String voiceCurrent(String name) {
+    return 'Current: $name';
+  }
+
+  @override
+  String get voiceSearch => 'Search name, ID, style or language';
+
+  @override
+  String get voiceClearSearch => 'Clear search';
+
+  @override
+  String voiceCount(int count) {
+    return '$count matching voices';
+  }
+
+  @override
+  String get voiceNoResults =>
+      'No matching voices. Try another keyword or provider.';
+
+  @override
+  String get voiceDoubaoHint =>
+      'Doubao voices use the mainland service. Text chat and voice changes during a call are unavailable; speak to your character or use quick actions.';
+
+  @override
+  String voiceSavedNotListed(String voice) {
+    return 'Saved voice “$voice” is absent from the current directory. Its preference is preserved; platform availability needs confirmation. You can choose a listed voice.';
+  }
+
+  @override
+  String get textChatUnsupported =>
+      'This voice model does not support text chat. Speak directly or use quick actions.';
+
+  @override
+  String get voicePreviewFailed =>
+      'Could not play this preview. Please try again.';
+
+  @override
+  String voicePlayPreview(String voice) {
+    return 'Preview $voice';
+  }
+
+  @override
+  String voiceStopPreview(String voice) {
+    return 'Stop previewing $voice';
   }
 }

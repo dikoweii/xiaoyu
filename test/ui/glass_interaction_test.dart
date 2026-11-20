@@ -7,6 +7,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:xiaoyu/domain/models.dart';
+import 'package:xiaoyu/domain/voice_catalog.dart';
 import 'package:xiaoyu/application/call_coordinator.dart';
 import 'package:xiaoyu/presentation/controllers.dart';
 import 'package:xiaoyu/ui/call_history.dart';
@@ -335,13 +336,20 @@ void main() {
       await reach(tester, 'choose-voice');
       await tester.tap(find.byKey(const Key('choose-voice')));
       await tester.pumpAndSettle();
-      final cherry = find.ancestor(
-        of: find.text('Cherry'),
-        matching: find.byType(AppSurface),
+      await tester.tap(find.byKey(const Key('voice-provider-doubao')));
+      await tester.pumpAndSettle();
+      final choose = find.byKey(
+        const Key('voice-select-zh_female_vv_uranus_bigtts'),
       );
-      final choose = find.descendant(
-        of: cherry,
-        matching: find.byType(AppButton),
+      await tester.scrollUntilVisible(
+        choose,
+        180,
+        scrollable: find
+            .descendant(
+              of: find.byKey(const Key('voice-list')),
+              matching: find.byType(Scrollable),
+            )
+            .first,
       );
       await tester.ensureVisible(choose);
       await tester.tap(choose);
@@ -354,12 +362,13 @@ void main() {
       await tester.pumpAndSettle();
       final saved = await fixture.app.local.character('fixture-character');
       expect(saved!.summary, 'Saved summary');
-      expect(saved.voice, 'Cherry');
+      expect(saved.voice, 'zh_female_vv_uranus_bigtts');
+      expect(saved.voiceProvider, VoiceProvider.doubao);
       unawaited(
         fixture.container.read(routerProvider).push('/edit/fixture-character'),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Cherry'), findsOneWidget);
+      expect(find.textContaining('Vivi 2.0'), findsOneWidget);
       await reach(tester, 'advanced-settings');
       await tester.tap(find.byKey(const Key('advanced-settings')));
       await tester.pumpAndSettle();

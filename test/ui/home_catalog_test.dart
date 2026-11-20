@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xiaoyu/app/app.dart';
 import 'package:xiaoyu/ui/core/design.dart';
+import 'package:xiaoyu/ui/account_editor.dart';
 import 'package:xiaoyu/ui/core/widgets.dart';
 import 'package:xiaoyu/ui/core/portrait_tile.dart';
 
@@ -107,7 +108,7 @@ void main() {
   });
 
   testWidgets(
-    'recommended image opens an editor with persisted metadata prefilled',
+    'recommended image prefills an unsaved editor without publishing a role',
     (tester) async {
       final fixture = Fixture();
       await fixture.open();
@@ -137,12 +138,12 @@ void main() {
       );
       await tester.tap(card);
       await tester.pumpAndSettle();
-      final draft = (await tester.runAsync(
-        () => fixture.app.local.watchCharacters().first,
-      ))!.singleWhere((c) => c.officialRoleId == 'offline-role-1');
+      final path = fixture.container.read(routerProvider).state.uri.path;
+      expect(path, startsWith('/edit/'));
+      final id = path.split('/').last;
       expect(
-        fixture.container.read(routerProvider).state.uri.path,
-        '/edit/${draft.id}',
+        await tester.runAsync(() => fixture.app.local.character(id)),
+        isNull,
       );
       expect(
         tester
@@ -163,8 +164,20 @@ void main() {
             .text,
         contains('耐心倾听'),
       );
-      expect(draft.summary, '一起分享生活的小事。');
-      expect(draft.sourceImageUrl, 'https://example.invalid/profile.png');
+      final editorScroll = tester.state<ScrollableState>(
+        find
+            .descendant(
+              of: find.byType(EditorScreen),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      // Avoid sending the drag to the nested, scrollable persona field.
+      editorScroll.position.jumpTo(editorScroll.position.maxScrollExtent);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('advanced-settings')));
+      await tester.pumpAndSettle();
+      expect(find.text('一起分享生活的小事。'), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
     },
   );

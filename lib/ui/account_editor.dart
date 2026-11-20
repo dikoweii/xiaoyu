@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +10,9 @@ import '../domain/models.dart';
 import '../presentation/controllers.dart';
 import 'core/design.dart';
 import 'core/widgets.dart';
+import 'voice_picker.dart';
+
+export 'voice_picker.dart';
 
 class AccountScreen extends ConsumerStatefulWidget {
   const AccountScreen({super.key});
@@ -146,8 +150,16 @@ class EditorScreen extends ConsumerStatefulWidget {
   ConsumerState<EditorScreen> createState() => _EditorScreenState();
 }
 
-class _EditorScreenState extends ConsumerState<EditorScreen> {
+class _EditorScreenState extends ConsumerState<EditorScreen>
+    with WidgetsBindingObserver {
   Character? character;
+  Character? _preparingImage;
+  String? _editId;
+  ScreenController? _controller;
+  bool _closed = false, _leaving = false, _confirming = false;
+  bool _assetSelectionChanged = false;
+  Character? _savedForm;
+  bool _foreground = true;
   final name = TextEditingController(),
       persona = TextEditingController(),
       summary = TextEditingController(),
@@ -156,22 +168,36 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     unawaited(_load());
   }
 
   Future<void> _load() async {
     await guarded(context, () async {
       final controller = ref.read(controllerProvider);
+      _controller = controller;
       final c = widget.id == 'new'
           ? controller.newCharacter()
           : await controller.character(widget.id);
       if (!mounted || c == null) return;
+      final editId = await controller.beginCharacterEdit(c);
+      if (!mounted) {
+        await controller.endCharacterEdit(editId, saved: false);
+        return;
+      }
+      _editId = editId;
+      _savedForm = c;
       name.text = c.name;
       persona.text = c.persona;
       summary.text = c.summary;
       greeting.text = c.greeting;
       setState(() => character = c);
-      if (widget.id == 'new') await controller.saveCharacter(c);
+      if (c.imagePath.isNotEmpty &&
+          (c.assetStatus == 'uploading' ||
+              c.avatarId.isNotEmpty &&
+                  {'created', 'processing'}.contains(c.assetStatus))) {
+        setState(() => _preparingImage = c);
+      }
     });
   }
 
@@ -181,6 +207,86 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     summary: summary.text.trim(),
     greeting: greeting.text.trim(),
   );
+  Future<void> _closeSaved() async {
+    if (!mounted) return;
+    await _endEdit(saved: true);
+    if (!mounted) return;
+    setState(() {
+      dirty = false;
+      busy = false;
+      _leaving = true;
+    });
+    // Let PopScope observe the saved state before requesting navigation.
+    await WidgetsBinding.instance.endOfFrame;
+    if (mounted) context.pop();
+  }
+
+  Future<void> _endEdit({required bool saved}) async {
+    if (_closed || _editId == null) return;
+    _closed = true;
+    await _controller!.endCharacterEdit(_editId!, saved: saved);
+  }
+
+  bool get _hasChanges {
+    if (!dirty || character == null || _savedForm == null) return false;
+    if (_assetSelectionChanged) return true;
+    final current = draft.toJson(), saved = _savedForm!.toJson();
+    // Remote preparation is progress, not an unsaved form change.
+    for (final key in ['avatarId', 'assetStatus', 'credentialId']) {
+      current.remove(key);
+      saved.remove(key);
+    }
+    return !mapEquals(current, saved);
+  }
+
+  Future<void> _back() async {
+    if (busy || _confirming || character == null) return;
+    if (!_hasChanges) {
+      await _endEdit(saved: false);
+    } else {
+      _confirming = true;
+      FocusManager.instance.primaryFocus?.unfocus();
+      final s = context.s;
+      final choice = await confirmation<String>(
+        context,
+        s.unsavedChanges,
+        s.unsavedDraft,
+        actions: (dialogContext) => [
+          TextButton(
+            key: const Key('edit-continue'),
+            onPressed: () => Navigator.of(dialogContext).pop('continue'),
+            child: Text(s.continueEditing),
+          ),
+          TextButton(
+            key: const Key('edit-discard'),
+            style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
+            onPressed: () => Navigator.of(dialogContext).pop('discard'),
+            child: Text(s.discardChanges),
+          ),
+          TextButton(
+            key: const Key('edit-save'),
+            onPressed: () => Navigator.of(dialogContext).pop('save'),
+            child: Text(s.saveDraft),
+          ),
+        ],
+      );
+      _confirming = false;
+      if (!mounted || choice == null || choice == 'continue') return;
+      if (choice == 'save') {
+        await _work(() async {
+          await _controller!.saveCharacter(draft, editId: _editId);
+          await _closeSaved();
+        });
+        return;
+      }
+      await _endEdit(saved: false);
+    }
+    if (!mounted) return;
+    setState(() => _leaving = true);
+    await WidgetsBinding.instance.endOfFrame;
+    if (mounted) context.pop();
+  }
+
   Future<void> _work(Future<void> Function() work) async {
     setState(() => busy = true);
     await guarded(context, work);
@@ -189,6 +295,8 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
 
   @override
   void dispose() {
+    unawaited(_endEdit(saved: false));
+    WidgetsBinding.instance.removeObserver(this);
     name.dispose();
     persona.dispose();
     summary.dispose();
@@ -197,21 +305,39 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      setState(() => _foreground = state == AppLifecycleState.resumed);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final s = context.s,
         controller = ref.read(controllerProvider),
         c = character;
+    AsyncValue<Character>? preparation;
+    if (_foreground && _preparingImage != null) {
+      final provider = avatarPreparationProvider((_preparingImage!, _editId!));
+      preparation = ref.watch(provider);
+      ref.listen(provider, (_, next) {
+        final asset = next.asData?.value;
+        if (asset == null || character?.imagePath != asset.imagePath) return;
+        setState(
+          () => character = character!.copyWith(
+            avatarId: asset.avatarId,
+            credentialId: asset.credentialId,
+            assetStatus: asset.assetStatus,
+          ),
+        );
+      });
+    }
     return PopScope(
-      canPop: !dirty && !busy,
+      canPop: _leaving || !_hasChanges && !busy,
       onPopInvokedWithResult: (didPop, _) async {
-        if (didPop || busy || c == null) return;
-        if (await confirm(context, s.saveDraft, s.unsavedDraft)) {
-          await controller.saveCharacter(draft);
-          if (context.mounted) {
-            setState(() => dirty = false);
-            context.pop();
-          }
-        }
+        if (!didPop) await _back();
       },
       child: AppPage(
         title: s.createTitle,
@@ -235,6 +361,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                           ),
                           gap(6),
                           AppButton(
+                            key: const Key('upload-photo'),
                             plain: true,
                             icon: const Icon(
                               Icons.add_photo_alternate_outlined,
@@ -244,9 +371,16 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                                 ? null
                                 : () => _work(() async {
                                     final updated = await controller
-                                        .choosePhoto(draft);
+                                        .choosePhoto(draft, editId: _editId);
                                     if (mounted) {
-                                      setState(() => character = updated);
+                                      setState(() {
+                                        if (updated.imagePath !=
+                                            character?.imagePath) {
+                                          _preparingImage = updated;
+                                          dirty = true;
+                                        }
+                                        character = updated;
+                                      });
                                     }
                                   }),
                             child: Text(s.uploadPhoto),
@@ -261,6 +395,23 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
+                  if (preparation != null && controller.hasCredential) ...[
+                    gap(6),
+                    Text(
+                      preparation.when(
+                        loading: () => s.status('uploading'),
+                        error: (error, _) => s.error(
+                          error is AppFailure ? error.code : 'network',
+                        ),
+                        data: (asset) => asset.assetStatus == 'failed'
+                            ? s.error('avatarFailed')
+                            : s.status(asset.assetStatus),
+                      ),
+                      key: const Key('photo-preparation-status'),
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
                   gap(18),
                   AppField(
                     key: const Key('character-name'),
@@ -304,15 +455,24 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                     child: ListTile(
                       key: const Key('choose-voice'),
                       title: Text(s.voice),
-                      subtitle: Text(c.voice),
+                      subtitle: Text(
+                        voiceSelectionLabel(context, c.voiceProvider, c.voice),
+                      ),
                       trailing: const Icon(Icons.chevron_right, size: 18),
                       onTap: busy
                           ? null
                           : () async {
-                              final voice = await chooseVoice(context, c.voice);
+                              final voice = await chooseVoice(
+                                context,
+                                c.voice,
+                                provider: c.voiceProvider,
+                              );
                               if (voice != null && mounted) {
                                 setState(() {
-                                  character = character!.copyWith(voice: voice);
+                                  character = character!.copyWith(
+                                    voice: voice.id,
+                                    voiceProvider: voice.provider,
+                                  );
                                   dirty = true;
                                 });
                               }
@@ -328,14 +488,17 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                         : () => _work(() async {
                             final updated = await controller.submitCharacter(
                               draft,
+                              editId: _editId,
                             );
                             if (context.mounted) {
                               setState(() {
                                 character = updated;
                                 dirty = false;
+                                _savedForm = draft;
+                                _assetSelectionChanged = false;
                               });
                               if (updated.ready) {
-                                context.pop();
+                                await _closeSaved();
                               } else {
                                 notice(
                                   context,
@@ -461,8 +624,18 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                   onPressed: busy
                       ? null
                       : () => work(() async {
-                          final v = await controller.upload(draft);
-                          if (mounted) setState(() => character = v);
+                          final v = await controller.upload(
+                            draft,
+                            editId: _editId,
+                          );
+                          if (mounted) {
+                            setState(() {
+                              character = v;
+                              _preparingImage = v;
+                              dirty = true;
+                              _assetSelectionChanged = true;
+                            });
+                          }
                         }),
                   child: Text(s.uploadAvatar),
                 ),
@@ -471,7 +644,10 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                   onPressed: busy
                       ? null
                       : () => work(() async {
-                          final v = await controller.refresh(draft);
+                          final v = await controller.refresh(
+                            draft,
+                            editId: _editId,
+                          );
                           if (mounted) setState(() => character = v);
                         }),
                   child: Text(s.refresh),
@@ -483,12 +659,12 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                 onPressed: busy
                     ? null
                     : () => work(() async {
-                        await controller.saveCharacter(draft);
+                        await controller.saveCharacter(draft, editId: _editId);
                         if (mounted) setState(() => dirty = false);
                         if (panelContext.mounted) {
                           Navigator.of(panelContext).pop();
                         }
-                        if (mounted) context.pop();
+                        await _closeSaved();
                       }),
                 child: Text(s.saveDraft),
               ),
@@ -506,8 +682,19 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     if (!mounted) return;
     final selected = await sheet<Json>(context, AssetPicker(assets: assets));
     if (selected == null) return;
-    final updated = await controller.selectAsset(draft, selected);
-    if (mounted) setState(() => character = updated);
+    final updated = await controller.selectAsset(
+      draft,
+      selected,
+      editId: _editId,
+    );
+    if (mounted) {
+      setState(() {
+        character = updated;
+        _preparingImage = null;
+        dirty = true;
+        _assetSelectionChanged = true;
+      });
+    }
   }
 }
 
@@ -532,122 +719,4 @@ class AssetPicker extends ConsumerWidget {
         ),
     ],
   );
-}
-
-Future<String?> chooseVoice(BuildContext context, String selected) =>
-    sheet<String>(context, VoicePicker(selected: selected));
-
-class VoicePicker extends StatefulWidget {
-  const VoicePicker({super.key, required this.selected});
-  final String selected;
-  @override
-  State<VoicePicker> createState() => _VoicePickerState();
-}
-
-class _VoicePickerState extends State<VoicePicker> {
-  @override
-  Widget build(BuildContext context) {
-    final s = context.s;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          s.voice,
-          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
-        ),
-        gap(8),
-        Wrap(
-          spacing: 8,
-          children: [
-            for (final label in [
-              s.voiceMine,
-              s.voiceAll,
-              s.voiceMale,
-              s.voiceFemale,
-            ])
-              SizedBox(
-                width: 68,
-                child: AppButton(
-                  plain: label != s.voiceAll,
-                  accent: label == s.voiceAll,
-                  onPressed: label == s.voiceAll
-                      ? () {}
-                      : () => notice(context, s.comingSoon),
-                  child: Text(label),
-                ),
-              ),
-          ],
-        ),
-        gap(12),
-        for (final entry in const [
-          ('Serena', Color(0xFF89718D)),
-          ('Cherry', Color(0xFF467B77)),
-          ('Chelsie', Color(0xFF9E585F)),
-          ('Ethan', Color(0xFF556B99)),
-        ])
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: AppSurface(
-              accent: entry.$1 == widget.selected,
-              radius: 18,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: Row(
-                children: [
-                  // Voice preview is unavailable; this is decorative artwork.
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [entry.$2, XiaoyuDesign.blush],
-                      ),
-                    ),
-                    child: const Icon(Icons.graphic_eq, size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          entry.$1,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          s.voiceStyle,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    width: MediaQuery.textScalerOf(context).scale(1) > 1.5
-                        ? 140
-                        : 80,
-                    child: AppButton(
-                      key: Key('voice-select-${entry.$1}'),
-                      accent: entry.$1 == widget.selected,
-                      onPressed: () => Navigator.of(context).pop(entry.$1),
-                      child: Text(
-                        entry.$1 == widget.selected ? s.chosen : s.choose,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        Text(
-          s.voicePreviewUnavailable,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ],
-    );
-  }
 }

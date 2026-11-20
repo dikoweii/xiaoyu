@@ -49,7 +49,7 @@
   "saveDraft": "Save draft",
   "saveCharacter": "Save companion",
   "callCostTitle": "Start a live conversation",
-  "callCostBody": "This uses your account credits. Billing starts when the control connection is ready. The default limit is 10 minutes. Muting may still incur charges. The call ends when the app goes into the background or the screen locks. Microphone access is required; your camera stays off.",
+  "callCostBody": "This uses your account credits. Billing starts when the control connection is ready. Each session lasts up to 2 hours; the platform ends it at the limit. Muting may still incur charges. The call ends when the app goes into the background or the screen locks. Microphone access is required; your camera stays off.",
   "endCall": "End call",
   "returnToCall": "Return to call",
   "connectingHint": "Waiting for live audio and video. You can end at any time.",
@@ -76,7 +76,7 @@
   "privacyBody": "Your API Key is only used to authenticate with Vidu. It is excluded from the chat database. Companions and chat text stay on this device. Live audio, persona and enabled knowledge and memory are sent to Vidu. Xiaoyu does not record entire calls.",
   "showKey": "Show or hide API Key",
   "about": "Xiaoyu · Integration preview",
-  "status": "{phase, select, idle{Ready} creating{Connecting} initializing{Preparing} joining{Connecting media} connected{In call} ending{Ending} ended{Ended} pending{Ending unconfirmed} failed{Failed} draft{Draft} created{Created} processing{Processing avatar} success{Avatar ready} other{Pending}}",
+  "status": "{phase, select, idle{Ready} creating{Connecting} initializing{Preparing} joining{Connecting media} connected{In call} ending{Ending} ended{Ended} pending{Ending unconfirmed} failed{Failed} uploading{Uploading photo} uploadFailed{Photo upload failed} uploadUnknown{Photo upload outcome unconfirmed} draft{Draft} created{Created} processing{Processing avatar} success{Avatar ready} other{Pending}}",
   "@status": {
     "placeholders": {
       "phase": {
@@ -95,7 +95,7 @@
       }
     }
   },
-  "error": "{code, select, missingKey{Set up your API Key first.} unauthorized{Invalid API Key. Please check it.} forbidden{This account cannot access the resource.} channelUnavailable{Agora is unavailable. Confirm channel access with Vidu.} insufficientCredit{Insufficient Vidu credits.} characterIncomplete{Complete the name, persona, ready avatar and compatible voice.} wrongCredential{This companion belongs to another credential profile. Restore its original profile.} microphoneDenied{Microphone permission is required. Allow it in system settings.} pendingCall{An earlier call has not been confirmed ended. Check History first.} prepareTimeout{Preparation timed out. Ending and checking status.} connectionLost{Connection lost. Ending and checking status.} notConnected{Connect a live call first.} actionCooldown{Wait two seconds before sending another action.} imageInvalid{Choose a supported image smaller than 20 MB.} inputInvalid{Check the input and its length.} voicePending{A voice update is awaiting confirmation.} voiceUnknown{Voice update outcome unknown. Change it in the next call.} voiceChangeFailed{Voice update failed. The accepted voice is unchanged.} commandRejected{The platform rejected the command.} notFound{Resource missing or temporarily unavailable.} protocol{The platform response is incompatible. Keep the pending record.} characterFieldsIncomplete{Enter a name and persona, choose a voice, and check the text length limits.} avatarProcessing{Your cloud avatar is processing. Details are saved. Tap Submit again later to check its status.} avatarFailed{Cloud avatar processing failed. Recreate it in Advanced settings or choose another photo.} other{The operation did not complete. Check the network or try later.}}",
+  "error": "{code, select, missingKey{Set up your API Key first.} unauthorized{Invalid API Key. Please check it.} forbidden{This account cannot access the resource.} channelUnavailable{Agora is unavailable. Confirm channel access with Vidu.} insufficientCredit{Insufficient Vidu credits.} characterIncomplete{Complete the name, persona, ready avatar and compatible voice.} wrongCredential{This companion belongs to another credential profile. Restore its original profile.} microphoneDenied{Microphone permission is required. Allow it in system settings.} pendingCall{An earlier call has not been confirmed ended. Check History first.} prepareTimeout{Preparation timed out. Ending and checking status.} connectionLost{Connection lost. Ending and checking status.} notConnected{Connect a live call first.} actionCooldown{Wait two seconds before sending another action.} imageInvalid{Choose a supported image smaller than 20 MB.} inputInvalid{Check the input and its length.} voicePending{A voice update is awaiting confirmation.} voiceUnknown{Voice update outcome unknown. Change it in the next call.} voiceChangeFailed{Voice update failed. The accepted voice is unchanged.} commandRejected{The platform rejected the command.} notFound{Resource missing or temporarily unavailable.} protocol{The platform response is incompatible. Keep the pending record.} characterFieldsIncomplete{Enter a name and persona, choose a voice, and check the text length limits.} avatarUploadFailed{Photo upload failed. The original is saved. Submit again or recreate it in Advanced settings.} avatarImageChanged{The photo or account changed. Submit the current photo again.} avatarUploadUnknown{Photo upload outcome unknown. Check existing avatars in Advanced settings or recreate it manually.} avatarProcessing{Your cloud avatar is processing. Details are saved. Its status updates automatically; you can return Home.} avatarFailed{Cloud avatar processing failed. Recreate it in Advanced settings or choose another photo.}voiceInvalid{Voice and voice model do not match. Please choose again.}voiceChangeUnsupported{Doubao does not support changing voices during a call. Edit the character for the next call.}textChatUnsupported{This voice model does not support text chat. Speak directly or use quick actions.} other{The operation did not complete. Check the network or try later.}}",
   "@error": {
     "placeholders": {
       "code": {
@@ -104,9 +104,12 @@
     }
   },
   "confirm": "Confirm",
-  "unsavedDraft": "Save your changes as a draft before leaving.",
+  "unsavedChanges": "Save changes?",
+  "continueEditing": "Keep editing",
+  "discardChanges": "Discard changes",
+  "unsavedDraft": "Save your changes before leaving?",
   "knowledgeUnavailable": "Knowledge · Not available yet",
-  "voicePreviewUnavailable": "Voice preview is not available yet. Select a voice for calls.",
+  "voicePreviewUnavailable": "Official voice directory · Preview is not available. Choosing a voice does not start a call.",
   "brandLine": "Every moment deserves to be heard",
   "bannerBadge": "Warmth · Just for you",
   "bannerTitle": "Companionship that responds",
@@ -170,6 +173,54 @@
     "description": "Horizontal quick action category labels.",
     "placeholders": {
       "id": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceQwen": "Qwen",
+  "voiceDoubao": "Doubao",
+  "voiceCurrent": "Current: {name}",
+  "voiceSearch": "Search name, ID, style or language",
+  "voiceClearSearch": "Clear search",
+  "voiceCount": "{count} matching voices",
+  "voiceNoResults": "No matching voices. Try another keyword or provider.",
+  "voiceDoubaoHint": "Doubao voices use the mainland service. Text chat and voice changes during a call are unavailable; speak to your character or use quick actions.",
+  "voiceSavedNotListed": "Saved voice “{voice}” is absent from the current directory. Its preference is preserved; platform availability needs confirmation. You can choose a listed voice.",
+  "textChatUnsupported": "This voice model does not support text chat. Speak directly or use quick actions.",
+  "@voiceCurrent": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@voiceSavedNotListed": {
+    "placeholders": {
+      "voice": {
+        "type": "String"
+      }
+    }
+  },
+  "voicePreviewFailed": "Could not play this preview. Please try again.",
+  "voicePlayPreview": "Preview {voice}",
+  "voiceStopPreview": "Stop previewing {voice}",
+  "@voicePlayPreview": {
+    "placeholders": {
+      "voice": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceStopPreview": {
+    "placeholders": {
+      "voice": {
         "type": "String"
       }
     }

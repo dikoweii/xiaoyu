@@ -39,9 +39,7 @@ const operations = {
 };
 Widget? panel(String page) => switch (page) {
   'me' => const AppPage(body: MePanel()),
-  'voices' => const AppPage(
-    body: SingleChildScrollView(child: VoicePicker(selected: 'Serena')),
-  ),
+  'voices' => const AppPage(body: VoicePicker(selected: 'Serena')),
   'assets' => const AppPage(
     body: SingleChildScrollView(
       child: AssetPicker(

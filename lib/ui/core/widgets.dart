@@ -40,55 +40,90 @@ class ConfirmationPanel extends StatelessWidget {
     required this.title,
     required this.body,
     this.destructive = false,
+    this.actions,
   });
   final String title, body;
   final bool destructive;
+  final List<Widget>? actions;
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: EdgeInsets.fromLTRB(
-      16,
-      16,
-      16,
-      16 + MediaQuery.viewInsetsOf(context).bottom,
-    ),
-    child: LiquidGlassAlertDialog(
-      key: const Key('confirmation'),
-      title: Text(title),
-      titleTextStyle: Theme.of(context).textTheme.headlineSmall
-          ?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
-      content: Text(body),
-      contentTextStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color: Colors.white.withAlpha(220),
-        fontSize: 14.5,
-        height: 1.4,
+  Widget build(BuildContext context) {
+    final titleStyle = Theme.of(context).textTheme.headlineSmall
+        ?.copyWith(color: Colors.white, fontWeight: FontWeight.w600);
+    final bodyStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
+      color: Colors.white.withAlpha(220),
+      fontSize: 14.5,
+      height: 1.4,
+    );
+    final style = XiaoyuDesign.glass(context)
+        .copyWith(color: const Color(0xCC17191F));
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        16,
+        16,
+        16,
+        16 + MediaQuery.viewInsetsOf(context).bottom,
       ),
-      scrollable: true,
-      style: XiaoyuDesign.glass(context)
-          .copyWith(color: const Color(0xCC17191F)),
-      actions: [
-        TextButton(
-          key: const Key('confirm-cancel'),
-          onPressed: () => Navigator.of(context).pop(false),
-          child: Text(context.s.cancel),
-        ),
-        TextButton(
-          key: const Key('confirm-accept'),
-          style:
-              TextButton.styleFrom(
-                foregroundColor: destructive
-                    ? Colors.redAccent
-                    : XiaoyuDesign.lavender,
-              ).copyWith(
-                overlayColor: destructive
-                    ? const WidgetStatePropertyAll(XiaoyuDesign.dangerPressed)
-                    : XiaoyuDesign.buttonOverlay,
+      child: actions != null
+          ? LiquidGlassDialog(
+              key: const Key('confirmation'),
+              style: style,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(title, style: titleStyle),
+                          gap(12),
+                          Text(body, style: bodyStyle),
+                          gap(16),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Keep every exit choice visible even with large text.
+                  for (final action in actions!) action,
+                ],
               ),
-          onPressed: () => Navigator.of(context).pop(true),
-          child: Text(context.s.confirm),
-        ),
-      ],
-    ),
-  );
+            )
+          : LiquidGlassAlertDialog(
+              key: const Key('confirmation'),
+              title: Text(title),
+              titleTextStyle: titleStyle,
+              content: Text(body),
+              contentTextStyle: bodyStyle,
+              scrollable: true,
+              style: style,
+              actions: [
+                TextButton(
+                  key: const Key('confirm-cancel'),
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text(context.s.cancel),
+                ),
+                TextButton(
+                  key: const Key('confirm-accept'),
+                  style:
+                      TextButton.styleFrom(
+                        foregroundColor: destructive
+                            ? Colors.redAccent
+                            : XiaoyuDesign.lavender,
+                      ).copyWith(
+                        overlayColor: destructive
+                            ? const WidgetStatePropertyAll(
+                                XiaoyuDesign.dangerPressed,
+                              )
+                            : XiaoyuDesign.buttonOverlay,
+                      ),
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text(context.s.confirm),
+                ),
+              ],
+            ),
+    );
+  }
 }
 
 Future<bool> confirm(
@@ -96,44 +131,53 @@ Future<bool> confirm(
   String title,
   String body, {
   bool destructive = false,
+}) async =>
+    await confirmation<bool>(context, title, body, destructive: destructive) ??
+    false;
+
+Future<T?> confirmation<T>(
+  BuildContext context,
+  String title,
+  String body, {
+  bool destructive = false,
+  List<Widget> Function(BuildContext)? actions,
 }) async {
   final themes = InheritedTheme.capture(
     from: context,
     to: Navigator.of(context, rootNavigator: true).context,
   );
-  return await showGeneralDialog<bool>(
-        context: context,
-        barrierDismissible: false,
-        barrierLabel: MaterialLocalizations.of(context)
-            .modalBarrierDismissLabel,
-        barrierColor: const Color(0x80000000),
-        transitionDuration: MediaQuery.disableAnimationsOf(context)
-            ? Duration.zero
-            : const Duration(milliseconds: 250),
-        pageBuilder: (_, _, _) => themes.wrap(
-          SafeArea(
-            child: ConfirmationPanel(
-              title: title,
-              body: body,
-              destructive: destructive,
-            ),
+  return showGeneralDialog<T>(
+    context: context,
+    barrierDismissible: false,
+    barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+    barrierColor: const Color(0x80000000),
+    transitionDuration: MediaQuery.disableAnimationsOf(context)
+        ? Duration.zero
+        : const Duration(milliseconds: 250),
+    pageBuilder: (dialogContext, _, _) => themes.wrap(
+      SafeArea(
+        child: ConfirmationPanel(
+          title: title,
+          body: body,
+          destructive: destructive,
+          actions: actions?.call(dialogContext),
+        ),
+      ),
+    ),
+    transitionBuilder: (_, animation, _, child) => FadeTransition(
+      opacity: animation,
+      child: ScaleTransition(
+        scale: Tween<double>(begin: .9, end: 1).animate(
+          CurvedAnimation(
+            parent: animation,
+            curve: const Cubic(.16, 1, .3, 1),
+            reverseCurve: const Cubic(.7, 0, .84, 0),
           ),
         ),
-        transitionBuilder: (_, animation, _, child) => FadeTransition(
-          opacity: animation,
-          child: ScaleTransition(
-            scale: Tween<double>(begin: .9, end: 1).animate(
-              CurvedAnimation(
-                parent: animation,
-                curve: const Cubic(.16, 1, .3, 1),
-                reverseCurve: const Cubic(.7, 0, .84, 0),
-              ),
-            ),
-            child: child,
-          ),
-        ),
-      ) ??
-      false;
+        child: child,
+      ),
+    ),
+  );
 }
 
 /// Full window scroll viewport, with fixed glass chrome over the scene.

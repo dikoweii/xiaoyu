@@ -12,13 +12,13 @@ class _ProcessingController extends ScreenController {
   _ProcessingController(super.runtime);
   var submissions = 0;
   @override
-  Future<Character> submitCharacter(Character value) async {
+  Future<Character> submitCharacter(Character value, {String? editId}) async {
     submissions++;
     final updated = value.copyWith(
       avatarId: 'new-account-asset',
       assetStatus: submissions == 1 ? 'processing' : 'success',
     );
-    await saveCharacter(updated);
+    await saveCharacter(updated, editId: editId);
     return updated;
   }
 }

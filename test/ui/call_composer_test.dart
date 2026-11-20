@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xiaoyu/application/call_coordinator.dart';
 import 'package:xiaoyu/domain/models.dart';
+import 'package:xiaoyu/domain/voice_catalog.dart';
+import 'package:xiaoyu/presentation/controllers.dart';
 import 'package:xiaoyu/presentation/quick_actions.dart';
 import 'package:xiaoyu/l10n/generated/app_localizations.dart';
 import 'package:xiaoyu/ui/call_history.dart';
@@ -22,8 +26,9 @@ class _Signal extends fake.FakeSignal {
 
 void main() {
   Future<({Fixture fixture, _Signal signal, fake.FakeStore store})> open(
-    WidgetTester tester,
-  ) async {
+    WidgetTester tester, {
+    Character character = fake.character,
+  }) async {
     final signal = _Signal(), store = fake.FakeStore();
     final calls = CallCoordinator(
       api: fake.FakeApi(),
@@ -39,7 +44,7 @@ void main() {
       await tester.pumpWidget(const SizedBox());
       await fixture.close();
     });
-    await calls.start(fake.character, fake.credential, 'offline');
+    await calls.start(character, fake.credential, 'offline');
     await fixture.pump(tester, route: '/call');
     return (fixture: fixture, signal: signal, store: store);
   }
@@ -48,6 +53,27 @@ void main() {
     await tester.tap(find.byKey(const Key('open-call-composer')));
     await tester.pumpAndSettle();
   }
+
+  testWidgets(
+    'Doubao explains unavailable text chat while quick actions still work',
+    (tester) async {
+      final data = await open(
+        tester,
+        character: fake.character.copyWith(
+          voiceProvider: VoiceProvider.doubao,
+          voice: 'zh_female_vv_uranus_bigtts',
+        ),
+      );
+      await panel(tester);
+      expect(find.byKey(const Key('text-chat-unsupported')), findsOneWidget);
+      expect(find.byKey(const Key('chat-input')), findsNothing);
+      expect(find.byKey(const Key('chat-send')), findsNothing);
+      await tester.tap(find.byKey(const Key('quick-action-heart')));
+      await tester.pumpAndSettle();
+      expect(data.signal.commands.last.type, 101);
+      expect(data.store.texts, isEmpty);
+    },
+  );
 
   testWidgets(
     'call has no transcript or inline input; keyboard opens dismissible draft',
@@ -290,6 +316,51 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     },
   );
+
+  testWidgets('live dot reuses its animation across call state changes', (
+    tester,
+  ) async {
+    final fixture = Fixture(phase: CallPhase.connected);
+    await fixture.open();
+    final states = StreamController<CallSnapshot>();
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox());
+      await states.close();
+      await fixture.close();
+    });
+    await tester.pumpWidget(
+      fixture.widget(
+        page: ProviderScope(
+          overrides: [
+            callProvider.overrideWith((ref) => states.stream),
+            presenceAnimationProvider.overrideWithValue(true),
+          ],
+          child: const CallScreen(),
+        ),
+      ),
+    );
+    await tester.pump();
+    Animation<double> opacity() => tester
+        .widget<FadeTransition>(find.byKey(const Key('call-live-indicator')))
+        .opacity;
+    final original = opacity();
+    for (var index = 0; index < 20; index++) {
+      fixture.app.calls.snapshot = fixture.app.calls.snapshot.copyWith(
+        muted: index.isEven,
+      );
+      states.add(fixture.app.calls.snapshot);
+      await tester.pump();
+      await tester.pump();
+      expect(opacity(), same(original));
+    }
+    final before = original.value;
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(original.value, isNot(before));
+    expect(original.value, inInclusiveRange(.4, 1));
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(seconds: 2));
+    expect(tester.takeException(), isNull);
+  });
 
   for (final reduced in [false, true]) {
     testWidgets('live dot breathes unless reduced motion=$reduced', (

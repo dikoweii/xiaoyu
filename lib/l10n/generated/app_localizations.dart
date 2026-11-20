@@ -406,7 +406,7 @@ abstract class AppLocalizations {
   /// No description provided for @callCostBody.
   ///
   /// In en, this message translates to:
-  /// **'This uses your account credits. Billing starts when the control connection is ready. The default limit is 10 minutes. Muting may still incur charges. The call ends when the app goes into the background or the screen locks. Microphone access is required; your camera stays off.'**
+  /// **'This uses your account credits. Billing starts when the control connection is ready. Each session lasts up to 2 hours; the platform ends it at the limit. Muting may still incur charges. The call ends when the app goes into the background or the screen locks. Microphone access is required; your camera stays off.'**
   String get callCostBody;
 
   /// No description provided for @endCall.
@@ -568,7 +568,7 @@ abstract class AppLocalizations {
   /// No description provided for @status.
   ///
   /// In en, this message translates to:
-  /// **'{phase, select, idle{Ready} creating{Connecting} initializing{Preparing} joining{Connecting media} connected{In call} ending{Ending} ended{Ended} pending{Ending unconfirmed} failed{Failed} draft{Draft} created{Created} processing{Processing avatar} success{Avatar ready} other{Pending}}'**
+  /// **'{phase, select, idle{Ready} creating{Connecting} initializing{Preparing} joining{Connecting media} connected{In call} ending{Ending} ended{Ended} pending{Ending unconfirmed} failed{Failed} uploading{Uploading photo} uploadFailed{Photo upload failed} uploadUnknown{Photo upload outcome unconfirmed} draft{Draft} created{Created} processing{Processing avatar} success{Avatar ready} other{Pending}}'**
   String status(String phase);
 
   /// No description provided for @usage.
@@ -580,7 +580,7 @@ abstract class AppLocalizations {
   /// No description provided for @error.
   ///
   /// In en, this message translates to:
-  /// **'{code, select, missingKey{Set up your API Key first.} unauthorized{Invalid API Key. Please check it.} forbidden{This account cannot access the resource.} channelUnavailable{Agora is unavailable. Confirm channel access with Vidu.} insufficientCredit{Insufficient Vidu credits.} characterIncomplete{Complete the name, persona, ready avatar and compatible voice.} wrongCredential{This companion belongs to another credential profile. Restore its original profile.} microphoneDenied{Microphone permission is required. Allow it in system settings.} pendingCall{An earlier call has not been confirmed ended. Check History first.} prepareTimeout{Preparation timed out. Ending and checking status.} connectionLost{Connection lost. Ending and checking status.} notConnected{Connect a live call first.} actionCooldown{Wait two seconds before sending another action.} imageInvalid{Choose a supported image smaller than 20 MB.} inputInvalid{Check the input and its length.} voicePending{A voice update is awaiting confirmation.} voiceUnknown{Voice update outcome unknown. Change it in the next call.} voiceChangeFailed{Voice update failed. The accepted voice is unchanged.} commandRejected{The platform rejected the command.} notFound{Resource missing or temporarily unavailable.} protocol{The platform response is incompatible. Keep the pending record.} characterFieldsIncomplete{Enter a name and persona, choose a voice, and check the text length limits.} avatarProcessing{Your cloud avatar is processing. Details are saved. Tap Submit again later to check its status.} avatarFailed{Cloud avatar processing failed. Recreate it in Advanced settings or choose another photo.} other{The operation did not complete. Check the network or try later.}}'**
+  /// **'{code, select, missingKey{Set up your API Key first.} unauthorized{Invalid API Key. Please check it.} forbidden{This account cannot access the resource.} channelUnavailable{Agora is unavailable. Confirm channel access with Vidu.} insufficientCredit{Insufficient Vidu credits.} characterIncomplete{Complete the name, persona, ready avatar and compatible voice.} wrongCredential{This companion belongs to another credential profile. Restore its original profile.} microphoneDenied{Microphone permission is required. Allow it in system settings.} pendingCall{An earlier call has not been confirmed ended. Check History first.} prepareTimeout{Preparation timed out. Ending and checking status.} connectionLost{Connection lost. Ending and checking status.} notConnected{Connect a live call first.} actionCooldown{Wait two seconds before sending another action.} imageInvalid{Choose a supported image smaller than 20 MB.} inputInvalid{Check the input and its length.} voicePending{A voice update is awaiting confirmation.} voiceUnknown{Voice update outcome unknown. Change it in the next call.} voiceChangeFailed{Voice update failed. The accepted voice is unchanged.} commandRejected{The platform rejected the command.} notFound{Resource missing or temporarily unavailable.} protocol{The platform response is incompatible. Keep the pending record.} characterFieldsIncomplete{Enter a name and persona, choose a voice, and check the text length limits.} avatarUploadFailed{Photo upload failed. The original is saved. Submit again or recreate it in Advanced settings.} avatarImageChanged{The photo or account changed. Submit the current photo again.} avatarUploadUnknown{Photo upload outcome unknown. Check existing avatars in Advanced settings or recreate it manually.} avatarProcessing{Your cloud avatar is processing. Details are saved. Its status updates automatically; you can return Home.} avatarFailed{Cloud avatar processing failed. Recreate it in Advanced settings or choose another photo.}voiceInvalid{Voice and voice model do not match. Please choose again.}voiceChangeUnsupported{Doubao does not support changing voices during a call. Edit the character for the next call.}textChatUnsupported{This voice model does not support text chat. Speak directly or use quick actions.} other{The operation did not complete. Check the network or try later.}}'**
   String error(String code);
 
   /// No description provided for @confirm.
@@ -589,10 +589,28 @@ abstract class AppLocalizations {
   /// **'Confirm'**
   String get confirm;
 
+  /// No description provided for @unsavedChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes?'**
+  String get unsavedChanges;
+
+  /// No description provided for @continueEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get continueEditing;
+
+  /// No description provided for @discardChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes'**
+  String get discardChanges;
+
   /// No description provided for @unsavedDraft.
   ///
   /// In en, this message translates to:
-  /// **'Save your changes as a draft before leaving.'**
+  /// **'Save your changes before leaving?'**
   String get unsavedDraft;
 
   /// No description provided for @knowledgeUnavailable.
@@ -604,7 +622,7 @@ abstract class AppLocalizations {
   /// No description provided for @voicePreviewUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'Voice preview is not available yet. Select a voice for calls.'**
+  /// **'Official voice directory · Preview is not available. Choosing a voice does not start a call.'**
   String get voicePreviewUnavailable;
 
   /// No description provided for @brandLine.
@@ -822,6 +840,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{id, select, common{Common} food{Food & drink} appearance{Hair & style} expressions{Expressions} gestures{Gestures} props{Props} other{}}'**
   String quickActionCategory(String id);
+
+  /// No description provided for @voiceQwen.
+  ///
+  /// In en, this message translates to:
+  /// **'Qwen'**
+  String get voiceQwen;
+
+  /// No description provided for @voiceDoubao.
+  ///
+  /// In en, this message translates to:
+  /// **'Doubao'**
+  String get voiceDoubao;
+
+  /// No description provided for @voiceCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current: {name}'**
+  String voiceCurrent(String name);
+
+  /// No description provided for @voiceSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search name, ID, style or language'**
+  String get voiceSearch;
+
+  /// No description provided for @voiceClearSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get voiceClearSearch;
+
+  /// No description provided for @voiceCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} matching voices'**
+  String voiceCount(int count);
+
+  /// No description provided for @voiceNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching voices. Try another keyword or provider.'**
+  String get voiceNoResults;
+
+  /// No description provided for @voiceDoubaoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Doubao voices use the mainland service. Text chat and voice changes during a call are unavailable; speak to your character or use quick actions.'**
+  String get voiceDoubaoHint;
+
+  /// No description provided for @voiceSavedNotListed.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved voice “{voice}” is absent from the current directory. Its preference is preserved; platform availability needs confirmation. You can choose a listed voice.'**
+  String voiceSavedNotListed(String voice);
+
+  /// No description provided for @textChatUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'This voice model does not support text chat. Speak directly or use quick actions.'**
+  String get textChatUnsupported;
+
+  /// No description provided for @voicePreviewFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not play this preview. Please try again.'**
+  String get voicePreviewFailed;
+
+  /// No description provided for @voicePlayPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview {voice}'**
+  String voicePlayPreview(String voice);
+
+  /// No description provided for @voiceStopPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop previewing {voice}'**
+  String voiceStopPreview(String voice);
 }
 
 class _AppLocalizationsDelegate

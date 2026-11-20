@@ -6,6 +6,7 @@ import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../domain/models.dart';
+import '../domain/voice_catalog.dart';
 import '../presentation/controllers.dart';
 import '../presentation/quick_actions.dart';
 import 'core/design.dart';
@@ -47,6 +48,7 @@ class _CallComposerState extends ConsumerState<CallComposer> {
         Navigator.of(context).pop();
       }
     });
+    final textSupported = call.character?.voiceProvider != VoiceProvider.doubao;
     final actions = category.actions;
     final actionHeight = math.max(
       48.0,
@@ -205,45 +207,51 @@ class _CallComposerState extends ConsumerState<CallComposer> {
                   ),
                 ],
                 gap(18),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        key: const Key('chat-input'),
-                        controller: widget.input,
-                        enabled: call.interactive && !sending,
-                        maxLength: 1000,
-                        minLines: 1,
-                        maxLines: 3,
-                        textCapitalization: TextCapitalization.sentences,
-                        decoration: InputDecoration(
-                          hintText: s.chatHint,
-                          counterText: '',
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
+                if (!textSupported)
+                  Text(
+                    s.textChatUnsupported,
+                    key: const Key('text-chat-unsupported'),
+                  ),
+                if (textSupported)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          key: const Key('chat-input'),
+                          controller: widget.input,
+                          enabled: call.interactive && !sending,
+                          maxLength: 1000,
+                          minLines: 1,
+                          maxLines: 3,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: InputDecoration(
+                            hintText: s.chatHint,
+                            counterText: '',
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    ValueListenableBuilder<TextEditingValue>(
-                      valueListenable: widget.input,
-                      builder: (_, value, _) => AppIconButton(
-                        key: const Key('chat-send'),
-                        icon: const Icon(CupertinoIcons.arrow_up),
-                        label: s.send,
-                        onPressed:
-                            call.interactive &&
-                                !sending &&
-                                value.text.trim().isNotEmpty
-                            ? () => unawaited(_send())
-                            : null,
+                      const SizedBox(width: 8),
+                      ValueListenableBuilder<TextEditingValue>(
+                        valueListenable: widget.input,
+                        builder: (_, value, _) => AppIconButton(
+                          key: const Key('chat-send'),
+                          icon: const Icon(CupertinoIcons.arrow_up),
+                          label: s.send,
+                          onPressed:
+                              call.interactive &&
+                                  !sending &&
+                                  value.text.trim().isNotEmpty
+                              ? () => unawaited(_send())
+                              : null,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
               ],
             ),
           ),

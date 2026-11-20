@@ -73,6 +73,8 @@
 
 在被忽略的 `build/harness/research/liquid_glass_easy_probe/` 建立了独立探针，不改变项目 pubspec/lock 或应用代码。探针包含普通 Scaffold/表单/卡片，以及 easy Button、Switch、AppBar、TabBar、AlertDialog、Sheet。
 
+2026-11-18 按用户要求清理了该临时探针及构建缓存。以下保留迁移时的执行记录，原探针产物已不存在，不作为当前可复核的验收证据。
+
 - 使用当前 Flutter/Dart：依赖解析成功。
 - 探针 `flutter analyze --no-pub`：通过。
 - 探针 `flutter build bundle --no-pub --target lib/main.dart --debug`：退出 0，10 个包内 shader 产物已生成。

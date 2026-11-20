@@ -13,6 +13,8 @@ import 'package:xiaoyu/data/local/repositories.dart';
 import 'package:xiaoyu/data/services/vidu_api.dart';
 import 'package:xiaoyu/domain/models.dart' as domain;
 import 'package:xiaoyu/presentation/controllers.dart';
+import 'package:xiaoyu/presentation/voice_preview.dart';
+import 'package:xiaoyu/domain/voice_preview.dart';
 import 'package:xiaoyu/ui/call_history.dart';
 import 'package:xiaoyu/ui/core/design.dart';
 import 'package:xiaoyu/l10n/generated/app_localizations.dart';
@@ -56,8 +58,12 @@ class Fixture {
     this.callsOverride,
     this.screenAwake,
     this.historyCount = 1,
+    this.previewAudio,
+    this.apiOverride,
   });
   final CallCoordinator? callsOverride;
+  final PreviewAudio? previewAudio;
+  final ViduApi? apiOverride;
   final Future<void> Function(bool)? screenAwake;
   final String locale;
   final int historyCount;
@@ -77,7 +83,10 @@ class Fixture {
     app = runtime.AppRuntime(
       local,
       credentials,
-      ViduApi(client: offlineDio((_) => throw StateError('Unexpected HTTP'))),
+      apiOverride ??
+          ViduApi(
+            client: offlineDio((_) => throw StateError('Unexpected HTTP')),
+          ),
       'offline-profile',
       callsOverride: callsOverride,
     );
@@ -97,6 +106,12 @@ class Fixture {
     container = ProviderContainer(
       retry: (_, _) => null,
       overrides: [
+        if (previewAudio != null)
+          previewAudioFactoryProvider.overrideWithValue(() => previewAudio!),
+        voiceAvatarProvider.overrideWithValue(
+          (_) =>
+              MemoryImage(File('test/assets/companion.png').readAsBytesSync()),
+        ),
         runtime.runtimeProvider.overrideWithValue(app),
         runtime.screenAwakeProvider.overrideWithValue(
           screenAwake ?? (_) async {},
