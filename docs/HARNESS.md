@@ -1,6 +1,6 @@
 # 小遇本地 Harness
 
-在仓库根目录执行 `dart run tool/harness.dart <命令>`。只验证 Android/iOS 手机，使用当前 Flutter/Dart SDK 和官方 pub/SPM 依赖，无云端 CI、全局配置或 AI 执行器。规则在 harness.yaml，项目工作流在 AGENTS.md 与 .agents/skills/xiaoyu-harness/SKILL.md。
+在仓库根目录执行 `dart run tool/harness.dart <命令>`。只验证 Android/iOS 手机，使用当前 Flutter/Dart SDK 和官方 pub/SPM 依赖，不修改全局配置，也不是 AI 执行器。GitHub Android 自动发布复用离线检查，详见 [Android 自动发布](ANDROID_RELEASE.md)。规则在 harness.yaml，项目工作流在 AGENTS.md 与 .agents/skills/xiaoyu-harness/SKILL.md。
 
 ```sh
 dart run tool/harness.dart doctor

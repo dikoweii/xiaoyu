@@ -47,7 +47,7 @@ flutter build apk --debug
 flutter build ios --debug --no-codesign
 ```
 
-Android 调试包位于 `build/app/outputs/flutter-apk/app-debug.apk`。iOS 无签名产物不能直接安装到真机。当前 Android release 配置仍使用 debug 签名，正式发布前必须配置正式签名；仓库不提供发布证书。
+Android 调试包位于 `build/app/outputs/flutter-apk/app-debug.apk`。iOS 无签名产物不能直接安装到真机。Android release 读取本地 `android/key.properties` 的固定签名；未配置时保留本地调试签名兼容行为。GitHub 自动发布强制使用仓库 Secrets 中的专用签名，详见 [Android 自动发布](ANDROID_RELEASE.md)。
 
 ## 本地验证
 

@@ -286,3 +286,15 @@ Character 在既有 config JSON 增加 voiceProvider，旧记录默认为 qwen_o
 按用户确认的 API 规则，单次会话最长 7200 秒，由服务到期主动关闭。移除 CallCoordinator 内写死的 10 分钟挂断计时器及其释放逻辑，不添加本地两小时计时器或时长设置；此决定取代早期 PRD 的默认 10 分钟及可选时长方案，也取代此前确认弹窗保留 10 分钟上限的描述。通话前中英文说明改为平台两小时上限。继续复用已有 type=6 平台结束事件、RTC 清理和 GET live 结束核对，不自动重建收费会话；本次不改变空闲超时和后台/锁屏结束策略。
 
 来源为用户本次提供并确认的接口约束，以及现有实时版参数文档 https://platform.vidu.cn/vidu-stream/doc/s2-avatar/realtime/parameters 。离线回归用虚拟时间验证超过 10 分钟及到达两小时时客户端不会自行挂断，随后模拟平台结束通知验证资源释放与结束核对；不以该测试代替真实两小时云端验收。
+
+## 2026-11-20：main 推送自动发布 Android APK
+
+按用户要求增加 GitHub Actions 自动构建和 Releases 分发；用户当前没有 Apple 付费开发者账号，本次仅接入 Android。此要求取代此前文档中“无云端 CI”的现状描述，保留原有本地 Harness、离线测试和验收门槛。
+
+来源：[GitHub push 事件](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#push)、[GitHub Actions Secrets](https://docs.github.com/en/actions/how-tos/security-for-github-actions/security-guides/using-secrets-in-github-actions)、[Flutter Android 发布与签名](https://docs.flutter.dev/deployment/android)、[GitHub 托管运行器](https://github.com/actions/runner-images)、[Flutter SDK 安装 Action](https://github.com/subosito/flutter-action)。第三方 Actions 固定到已查询的提交摘要，Flutter/Dart 沿用项目固定版本。
+
+采用 macOS 15 完整检查、Linux 构建及独立发布任务：现有黄金图使用 macOS 苹方，不能因 Linux 字体不同而删除或跳过测试。缺少字体或检查失败直接停止发布。仅发布任务有 contents:write；签名 Secrets 只提供给构建步骤，签名文件不进入构建素材或仓库，Vidu 运行时凭证不进入 CI。发布先创建草稿，附件齐全后公开为预发布版本，标签和版本码按运行编号唯一生成。
+
+未发现小遇专用正式签名，仅有通用 debug 密钥及另一项目签名；按用户“有则沿用、无则生成”的授权创建小遇专用 JKS，并保留本地私有记录。未配置签名时仅本地开发保留既有调试签名；CI 缺少 Secrets 必须失败，避免每次构建更换签名导致不能覆盖升级。此前调试签名的安装包需要卸载后安装新签名版本，文档说明本地数据影响。
+
+替代方案：每次运行创建 debug 密钥会破坏覆盖升级；把签名文件放入公开源码不适合该仓库；直接在 Linux 上接受不同黄金图或跳过检查会降低验收门槛；每次 main 推送标为正式稳定版会混淆内测与正式发布。IPA 需要另行确定签名和分发条件，不能把未签名产物宣称为可直接安装的 iOS 安装包。

@@ -28,6 +28,8 @@
 
 ## 快速开始
 
+[下载 Android APK](https://github.com/hsuehly/xiaoyu/releases) · [自动发布说明](docs/ANDROID_RELEASE.md)
+
 开发环境使用 Flutter `3.50.0` / Dart `3.14.0`；支持 Android 8.0+、iOS 15+。平台 SDK 与签名配置见[开发指南](docs/DEVELOPMENT.md)。
 
 ```sh
